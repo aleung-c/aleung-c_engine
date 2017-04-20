@@ -1,14 +1,14 @@
-// --------------------------------------------	//
+// -------------------------------------------- //
 //                                              //
-//	aleung-c engine README                      //
+//  aleung-c engine README                      //
 //                                              //
-// --------------------------------------------	//
+// -------------------------------------------- //
 
 Summary:
 
-	I. Installing the engine.
-	II. Using the engine.
-	III. Credits.
+    I. Installing the engine.
+    II. Using the engine.
+    III. Credits.
 
 This game engine is an overlay of classes and functions that can be put in code to
 create simple 3d opengl programs. It will handle opengl related calls and
@@ -51,7 +51,7 @@ And finally the engine linking:
 
 This gives in my example the following makefile compilation lines (then again, macOS):
 
-	[...]
+    [...]
 
     SRC = ...
 
@@ -67,50 +67,50 @@ This gives in my example the following makefile compilation lines (then again, m
     CC = clang++ -g -Wall -Werror -Wextra $(FREETYPE2_I)
 
     ENGINE_DIR = ./aleung-c_engine/
-	ENGINE_L = -L./aleung-c_engine/ -laleung-c_engine
+    ENGINE_L = -L./aleung-c_engine/ -laleung-c_engine
 
-	# ----- Makefile rules -----
-	all: engine $(NAME)
+    # ----- Makefile rules -----
+    all: engine $(NAME)
 
-	$(NAME): $(OBJ)
-	    $(CC) -o $(NAME) $(OBJ) $(GL) $(GLFW) $(FREETYPE2_L) $(ENGINE_L)
+    $(NAME): $(OBJ)
+        $(CC) -o $(NAME) $(OBJ) $(GL) $(GLFW) $(FREETYPE2_L) $(ENGINE_L)
 
     engine:
         make -C $(ENGINE_DIR)
 
     %.o: %.cpp
-	    $(CC) -o $@ -c $<
+        $(CC) -o $@ -c $<
 
-	[...]
+    [...]
 
 II. Using the engine.
 
 Once the engine is linked, congratulations! That was the toughest part.
 To use the engine, you must before almost everything else init the engine like this:
 
-	GameEngineController	GameEngine;
+    GameEngineController    GameEngine;
 
-	GameEngine->Init(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
+    GameEngine->Init(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
 
 This will create a window with the specified arguments.
 Then, you should have a loop such as this:
 
-	Game.InitGame();
-	while (!glfwWindowShouldClose(GameEngine->Window))
-	{
-		glfwPollEvents();
+    Game.InitGame();
+    while (!glfwWindowShouldClose(GameEngine->Window))
+    {
+        glfwPollEvents();
 
-		Game.Update();
-		GameEngine->Draw();
-		Game.LateUpdate();
-	}
+        Game.Update();
+        GameEngine->Draw();
+        Game.LateUpdate();
+    }
 
 "Game" being an imaginary class where you will code your gameplay.
 
 To put an object in the world, you should just do this:
 
-	Character = new GameObject("Character", "./ressources/Model.obj");
-	Character->Position = glm::vec3(3.0, 0.0, 0.0);
+    Character = new GameObject("Character", "./ressources/Model.obj");
+    Character->Position = glm::vec3(3.0, 0.0, 0.0);
 
 This will put the object in the engine's list of object, and draw it when 
 asked.
