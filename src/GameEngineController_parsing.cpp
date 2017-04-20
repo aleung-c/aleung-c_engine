@@ -13,7 +13,7 @@ char		*GameEngineController::GetFileContent(std::string file_path)
 	fp = fopen(file_path.c_str(), "rb" );
 	if (!fp)
 	{
-		printf("Error opening file\n");
+		std::cout << "Error opening file: " << file_path << std::endl;
 		exit(-1);
 	}
 
@@ -24,7 +24,7 @@ char		*GameEngineController::GetFileContent(std::string file_path)
 	buffer = (char *)malloc(sizeof(char) * lsize);
 	if (!buffer)
 	{
-		printf("Error allocating vertex shader memory\n");
+		std::cout << "Error allocating vertex shader memory for file: " << file_path << std::endl;
 		exit(-1);
 	}
 
@@ -32,7 +32,7 @@ char		*GameEngineController::GetFileContent(std::string file_path)
 	{
 		fclose(fp);
 		free(buffer);
-		printf("entire read fails\n");
+		std::cout << "Error: entire read fails for file: " << file_path << std::endl;
 		exit(1);
 	}
 	buffer[lsize] = '\0';
@@ -52,12 +52,12 @@ int		GameEngineController::LoadTextureFile(t_bmp_texture *texture, std::string p
 	file = fopen(path.c_str(), "rb");
 	if (!file)
 	{
-		std::cout << "Image could not be opened" << std::endl;
+		std::cout << "Image could not be opened: " << path << std::endl;
 		return (-1);
 	}
 	if (fread(texture->header, 1, 54, file) != 54)
 	{ // If not 54 bytes read == problem
-    	std::cout << "Not a correct BMP file" << std::endl;
+    	std::cout << "Not a correct BMP file: " << path << std::endl;
     	return (-1);
 	}
 	texture->data_pos = *(int*)&(texture->header[10]);
@@ -66,7 +66,7 @@ int		GameEngineController::LoadTextureFile(t_bmp_texture *texture, std::string p
 	texture->height = *(int*)&(texture->header[22]);
 	if ( texture->header[0] != 'B' || texture->header[1] != 'M' )
 	{
-		std::cout << "Not a correct BMP file" << std::endl;
+		std::cout << "Not a correct BMP file: " << path << std::endl;
 		return (-1);
 	}
 	// Debug print.

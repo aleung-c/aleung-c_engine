@@ -1,10 +1,17 @@
 #include "../includes/aleung-c_engine.hpp"
 
+// default constructor
 GameEngineController::GameEngineController()
 :
 DebugMode(false),
 EngineInitialized(false)
 
+{
+
+}
+
+// default destructor
+GameEngineController::~GameEngineController()
 {
 
 }
@@ -31,9 +38,45 @@ void		GameEngineController::InitEngine(int windowWidth, int windowHeight, std::s
 	LoadMatrices();
 	EngineInitialized = true;
 	if (DebugMode)
+	{
+		CheckForOpenGLErrors();
 		std::cout << "GameEngineController: Engine initialized!" << std::endl;
+	}
 }
 
+void	GameEngineController::CheckForOpenGLErrors()
+{
+	int error = 0;
+
+	// check if main 3d perspective shader is compiled and linked;
+	GLint isLinked = 0;
+	glGetProgramiv(MainShaderProgramme, GL_LINK_STATUS, &isLinked);
+	if (isLinked == GL_FALSE)
+	{
+		printf(KRED "Error: Main Shader programme NOT linked%s\n", KRESET);
+		error = -1;
+	}
+	else
+		printf(KGRN "Main Shader programme linked%s\n", KRESET);
+	// check if ortho shader is compiled and linked;
+	isLinked = 0;
+	glGetProgramiv(OrthoShaderProgramme, GL_LINK_STATUS, &isLinked);
+	if (isLinked == GL_FALSE)
+	{
+		printf(KRED "Error: Text Shader programme NOT linked%s\n", KRESET);
+		error = -1;
+	}
+	else
+		printf(KGRN "Text Shader programme linked%s\n", KRESET);
+	if (error == 0)
+		return ;
+
+	// check for opengl errors.
+	GLenum err = GL_NO_ERROR;
+	while ((err = glGetError()) != GL_NO_ERROR)
+		printf(KRED "OpenGL Error: %u%s\n", err, KRESET);
+	exit (-1);
+}
 
 // --------------------------------------------------------------------	//
 //																		//
@@ -248,12 +291,12 @@ void	GameEngineController::Draw3DModels()
 
 void	GameEngineController::DrawUIObjects()
 {
-	glUseProgram(TextShaderProgramme);
+	glUseProgram(OrthoShaderProgramme);
 	// set projection matrice.
-	GLint uniform_mat = glGetUniformLocation(TextShaderProgramme, "projection_matrix");
+	GLint uniform_mat = glGetUniformLocation(OrthoShaderProgramme, "projection_matrix");
 	if (uniform_mat != -1)
 		glUniformMatrix4fv(uniform_mat, 1, GL_FALSE, &MatOrthographicProjection[0][0]);
-	glUniform1i(glGetUniformLocation(TextShaderProgramme, "IsText"), GL_FALSE);
+	glUniform1i(glGetUniformLocation(OrthoShaderProgramme, "IsText"), GL_FALSE);
 	for (std::vector<GameUIObject *>::iterator it = GameUIObjectList.begin();
 		it != GameUIObjectList.end();
 		it++)
@@ -270,12 +313,12 @@ void	GameEngineController::DrawUIObjects()
 
 void	GameEngineController::DrawTextObjects()
 {
-	glUseProgram(TextShaderProgramme);
+	glUseProgram(OrthoShaderProgramme);
 	// set projection matrice.
-	GLint uniform_mat = glGetUniformLocation(TextShaderProgramme, "projection_matrix");
+	GLint uniform_mat = glGetUniformLocation(OrthoShaderProgramme, "projection_matrix");
 	if (uniform_mat != -1)
 		glUniformMatrix4fv(uniform_mat, 1, GL_FALSE, &MatOrthographicProjection[0][0]);
-	glUniform1i(glGetUniformLocation(TextShaderProgramme, "IsText"), GL_TRUE);
+	glUniform1i(glGetUniformLocation(OrthoShaderProgramme, "IsText"), GL_TRUE);
 	for (std::vector<GameTextObject *>::iterator it = GameTextObjectList.begin();
 		it != GameTextObjectList.end();
 		it++)

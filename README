@@ -1,5 +1,143 @@
 // --------------------------------------------	//
-// 						//
-//	aleung-c engine README			//
-//						//
+//                                              //
+//	aleung-c engine README                      //
+//                                              //
 // --------------------------------------------	//
+
+Summary:
+
+	I. Installing the engine.
+	II. Using the engine.
+	III. Credits.
+
+This game engine is an overlay of classes and functions that can be put in code to
+create simple 3d opengl programs. It will handle opengl related calls and
+memory handling, to allow the gameplay side to just call some lines of code to
+put 3d model and 2d pictures on the screen.
+
+
+I. Installing the engine.
+
+This small engine comes in the form a static library: libaleung-c_engine.a
+The makefile in the folder compiles the .a lib.
+
+To compile this engine with your program, you MUST link your program to the libraries used in the engine.
+They are the following:
+
+GLFW 3.2.1
+OpenGL 4.1
+freetype 2.4.0
+
+This means that when you compile your program, you should have several lines added.
+These are the lines added to compiling on macOS Sierra 10.12.1 :
+
+    # Linking opengl
+    -framework OpenGL
+    # Linking Ios window related frameworks
+    -framework Cocoa -framework CoreVideo -framework IOKit
+    # Linking GLUT and GLFW.
+    -framework GLUT -L./aleung-c_engine/glfw-3.2.1/src -lglfw3
+
+
+    # For freetype true font loading library
+    -L./aleung-c_engine/freetype-2.4.0/objs -lfreetype
+    # This one is needed in the .cpp to .o conversion, as freetype 2 is also a static lib, and requires an additionnal .I link.
+    -I./aleung-c_engine/freetype-2.4.0/include
+
+And finally the engine linking:
+
+    -L./aleung-c_engine/ -laleung-c_engine
+
+
+This gives in my example the following makefile compilation lines (then again, macOS):
+
+	[...]
+
+    SRC = ...
+
+    OBJ = $(SRC:.cpp=.o)
+
+    GL = -framework OpenGL
+    GLFW = -framework Cocoa -framework CoreVideo -framework IOKit -framework GLUT -L./aleung-c_engine/glfw-3.2.1/src -lglfw3
+
+    # For freetype true font loading library
+    FREETYPE2_L = -L./aleung-c_engine/freetype-2.4.0/objs -lfreetype
+    FREETYPE2_I = -I./aleung-c_engine/freetype-2.4.0/include
+
+    CC = clang++ -g -Wall -Werror -Wextra $(FREETYPE2_I)
+
+    ENGINE_DIR = ./aleung-c_engine/
+	ENGINE_L = -L./aleung-c_engine/ -laleung-c_engine
+
+	# ----- Makefile rules -----
+	all: engine $(NAME)
+
+	$(NAME): $(OBJ)
+	    $(CC) -o $(NAME) $(OBJ) $(GL) $(GLFW) $(FREETYPE2_L) $(ENGINE_L)
+
+    engine:
+        make -C $(ENGINE_DIR)
+
+    %.o: %.cpp
+	    $(CC) -o $@ -c $<
+
+	[...]
+
+II. Using the engine.
+
+Once the engine is linked, congratulations! That was the toughest part.
+To use the engine, you must before almost everything else init the engine like this:
+
+	GameEngineController	GameEngine;
+
+	GameEngine->Init(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
+
+This will create a window with the specified arguments.
+Then, you should have a loop such as this:
+
+	Game.InitGame();
+	while (!glfwWindowShouldClose(GameEngine->Window))
+	{
+		glfwPollEvents();
+
+		Game.Update();
+		GameEngine->Draw();
+		Game.LateUpdate();
+	}
+
+"Game" being an imaginary class where you will code your gameplay.
+
+To put an object in the world, you should just do this:
+
+	Character = new GameObject("Character", "./ressources/Model.obj");
+	Character->Position = glm::vec3(3.0, 0.0, 0.0);
+
+This will put the object in the engine's list of object, and draw it when 
+asked.
+The texture must have the same name as the obj and be in the same folder,
+with only the extension modified in bmp, for example : "./ressources/Model.bmp"
+
+You can add as many GameObject as you wish, they will all be drawn with the draw() call.
+
+In the same idea, you can create GameUIObject, requiring a picture, that will be put on
+screen as a 2d element over the 3d objects(that's a UI picture alright).
+
+And then, you can add GameTextObject elements, which will put text on the screen, as 2D
+elements as well, and which will be on top of the ui elements.
+
+With these three classes, you can start making games, as their glm::vec3 Position, Rotation, and Scale
+can be modified, and will be reflected in the draw() calls.
+
+The goal of this engine is to handle every window drawing related calls, and allow to have an overlay of class elements
+that can be easily put on the screen and modified through code.
+
+III. Credits
+
+Credits:
+- aleung-c (the author)
+- Joey de Vries from learnopengl.com, particularly https://learnopengl.com/#!In-Practice/Text-Rendering.
+- http://www.opengl-tutorial.org/, for their simple bmp loader.
+- OpenGL
+- GLFW
+- Freetype2
+- GLM

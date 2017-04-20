@@ -94,7 +94,7 @@ void	GameEngineController::LoadFreeTypesCharacters()
 
 void	GameEngineController::RenderText(GameTextObject *obj)
 {
-	glUniform3f(glGetUniformLocation(TextShaderProgramme, "textColor"),
+	glUniform3f(glGetUniformLocation(OrthoShaderProgramme, "textColor"),
 		obj->Color.x, obj->Color.y, obj->Color.z);
 	glBindVertexArray(obj->GetVao());
 	tmp_x = obj->Position.x;

@@ -39,7 +39,7 @@ class	GameEngineController
 		char								*TextFShader;
 
 		GLuint								MainShaderProgramme;
-		GLuint								TextShaderProgramme;
+		GLuint								OrthoShaderProgramme;
 
 		// ------ Matrix handling ------
 		// Model
@@ -81,6 +81,9 @@ class	GameEngineController
 		int									InitOpenGL();
 		int									InitFreeType();
 		void								LoadFreeTypesCharacters();
+
+
+		void								CheckForOpenGLErrors();
 
 		void								LoadShaders();
 

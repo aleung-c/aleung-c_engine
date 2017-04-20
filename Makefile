@@ -4,7 +4,7 @@
 #													#
 #---------------------------------------------------#
 
-NAME = aleung-c_engine.a
+NAME = libaleung-c_engine.a
 
 SRC = ./src/GameEngineController.cpp \
 ./src/GameEngineController_freetype_font.cpp \

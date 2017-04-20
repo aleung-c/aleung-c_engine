@@ -12,8 +12,8 @@ void	GameEngineController::LoadShaders()
 	//	3d model Shaders -> main shader											  //
 	// -------------------------------------------------------------------------- //
 	// Go get Position shader
-	VertexShader_1 = GetFileContent("./shaders/vshader_1.vs");
-	FragmentShader_1 = GetFileContent("./shaders/fshader_1.fs");
+	VertexShader_1 = GetFileContent("./aleung-c_engine/shaders/vshader_1.vs");
+	FragmentShader_1 = GetFileContent("./aleung-c_engine/shaders/fshader_1.fs");
 
 	// Create shader programme
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
@@ -30,10 +30,10 @@ void	GameEngineController::LoadShaders()
 	MainShaderProgramme = shader_programme;
 
 	// -------------------------------------------------------------------------- //
-	//	Text Shaders															  //
+	//	Orthographic Shaders -> UI and text										  //
 	// -------------------------------------------------------------------------- //
-	TextVShader = GetFileContent("./shaders/text_vshader_1.vs");
-	TextFShader = GetFileContent("./shaders/text_fshader_1.fs");
+	TextVShader = GetFileContent("./aleung-c_engine/shaders/ortho_vshader_1.vs");
+	TextFShader = GetFileContent("./aleung-c_engine/shaders/ortho_fshader_1.fs");
 
 	// Create shader programme
 	GLuint vs2 = glCreateShader(GL_VERTEX_SHADER);
@@ -47,5 +47,5 @@ void	GameEngineController::LoadShaders()
 	glAttachShader(shader_programme2, fs2);
 	glAttachShader(shader_programme2, vs2);
 	glLinkProgram (shader_programme2);
-	TextShaderProgramme = shader_programme2;
+	OrthoShaderProgramme = shader_programme2;
 }
