@@ -60,10 +60,10 @@ void		GameUIObject::LoadTexture()
 	// 	GLuint	texture;
 	// 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, _objTextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
 		_objTexture.width,
 		_objTexture.height,
-		0, GL_BGR, GL_UNSIGNED_BYTE, _objTexture.data);
+		0, GL_BGRA, GL_UNSIGNED_BYTE, _objTexture.data);
 
 	// // Set texture options
 	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
