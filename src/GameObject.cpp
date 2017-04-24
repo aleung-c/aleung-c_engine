@@ -138,7 +138,7 @@ void		GameObject::SetBuffers()
 	glEnableVertexAttribArray(0);
 
 	// generating vbo buffers -> useless in truth, but we never know.
-	std::cout << "vertices nb : " << _objVertices.size() << std::endl;
+	// std::cout << "vertices nb : " << _objVertices.size() << std::endl;
 	_vbo = 0;
 	glGenBuffers(1, &(_vbo));
 

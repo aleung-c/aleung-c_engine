@@ -1,5 +1,7 @@
 #include "../includes/aleung-c_engine.hpp"
 
+GameEngineController GameEngineController::m_instance = GameEngineController();
+
 // default constructor
 GameEngineController::GameEngineController()
 :

@@ -113,7 +113,7 @@ class	GameEngineController
 		void								SetCameraLookAt(glm::vec3 new_look_pos);
 
 	private:
-		static GameEngineController m_instance;
+		static GameEngineController			m_instance;
 
 		// ------ Font tmp vars ------
 		int									tmp_x;
