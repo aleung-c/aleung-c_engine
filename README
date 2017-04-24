@@ -85,6 +85,8 @@ This gives in my example the following makefile compilation lines (then again, m
 
 II. Using the engine.
 
+a. Starting the code.
+
 Once the engine is linked, congratulations! That was the toughest part.
 To use the engine, you must before almost everything else init the engine like this:
 
@@ -107,6 +109,26 @@ Then, you should have a loop such as this:
 
 "Game" being an imaginary class where you will code your gameplay.
 
+Know that as you code, you always have access to the instance of the engine with:
+
+     GameEngineController::Instance()
+
+It is a singleton, accessible wherever you need it.
+
+b. Set the camera.
+
+To get access to the camera, the engine has these public methods:
+
+	GameObject	*GetCamera();
+	glm::vec3	*GetCameraLookAtVec3();
+	void		SetCamera(GameObject *NewCamera);
+	void		SetCameraLookAt(glm::vec3 new_look_pos);
+
+Use them to stock or replace the engine's default camera for gameplay purpose,
+until I get motivated to make a better user set camera.
+
+c. Putting objects on our screen.
+
 To put an object in the world, you should just do this:
 
     Character = new GameObject("Character", "./ressources/Model.obj");
@@ -118,6 +140,8 @@ The texture must have the same name as the obj and be in the same folder,
 with only the extension modified in bmp, for example : "./ressources/Model.bmp"
 
 You can add as many GameObject as you wish, they will all be drawn with the draw() call.
+
+d. Differents objects, different uses.
 
 In the same idea, you can create GameUIObject, requiring a picture, that will be put on
 screen as a 2d element over the 3d objects(that's a UI picture alright).

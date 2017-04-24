@@ -29,7 +29,10 @@ class	GameEngineController
 		std::vector<GameTextObject *>		GameTextObjectList;
 		std::vector<GameUIObject *>			GameUIObjectList;
 
+
+		// ------ Engine's Camera handling ------
 		GameObject							*MainCamera;
+		glm::vec3							CameraLookAt;
 
 		// ------ Shaders handling ------
 		char								*VertexShader_1;
@@ -45,6 +48,7 @@ class	GameEngineController
 		// Model
 		glm::mat4							MatModelIdentity;
 		glm::mat4							MatModelTranslation;
+		glm::mat4							MatModelRecenter;
 		glm::mat4							MatModelRotation;
 		glm::mat4							MatModelScaling;
 
@@ -101,6 +105,12 @@ class	GameEngineController
 		void								DrawTextObjects();
 
 		void								RenderUIObject(GameUIObject *obj);
+
+		// User access
+		GameObject							*GetCamera();
+		glm::vec3							*GetCameraLookAt();
+		void								SetCamera(GameObject *NewCamera);
+		void								SetCameraLookAt(glm::vec3 new_look_pos);
 
 	private:
 		static GameEngineController m_instance;

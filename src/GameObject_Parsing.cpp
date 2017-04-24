@@ -22,19 +22,19 @@ void		GameObject::GetObjValues(FILE *file)
 				vertex.w = 1.0;
 				// ----- Set Bounding box values;
 				// Set x
-				if (vertex.x > BoundingBoxMax.x)
+				if (vertex.x >= BoundingBoxMax.x)
 					BoundingBoxMax.x = vertex.x;
-				if (vertex.x < BoundingBoxMin.x)
+				if (vertex.x <= BoundingBoxMin.x)
 					BoundingBoxMin.x = vertex.x;
 				// Set y
-				if (vertex.y > BoundingBoxMax.y)
+				if (vertex.y >= BoundingBoxMax.y)
 					BoundingBoxMax.y = vertex.y;
-				if (vertex.y < BoundingBoxMin.y)
+				if (vertex.y <= BoundingBoxMin.y)
 					BoundingBoxMin.y = vertex.y;
 				// Set z
-				if (vertex.z > BoundingBoxMax.z)
+				if (vertex.z >= BoundingBoxMax.z)
 					BoundingBoxMax.z = vertex.z;
-				if (vertex.z < BoundingBoxMin.z)
+				if (vertex.z <= BoundingBoxMin.z)
 					BoundingBoxMin.z = vertex.z;
 				// ----- end set bounding box min max.
 				_objVertices.push_back(vertex);

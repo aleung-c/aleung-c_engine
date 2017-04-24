@@ -54,6 +54,20 @@ GameObject::GameObject(std::string objName, std::string path)
 	BoundingBoxCenter.x = (BoundingBoxMin.x + BoundingBoxMax.x) / 2;
 	BoundingBoxCenter.y = (BoundingBoxMin.y + BoundingBoxMax.y) / 2;
 	BoundingBoxCenter.z = (BoundingBoxMin.z + BoundingBoxMax.z) / 2;
+
+	// ----- PRINT Bounding box
+	// std::cout << "min = " << BoundingBoxMin.x << "x "
+	// 			<< BoundingBoxMin.y << "y "
+	// 			<< BoundingBoxMin.z << "z" << std::endl;
+
+	// std::cout << "center = " << BoundingBoxCenter.x << "x "
+	// 			<< BoundingBoxCenter.y << "y "
+	// 			<< BoundingBoxCenter.z << "z" << std::endl;
+
+	// std::cout << "max = " << BoundingBoxMax.x << "x "
+	// 			<< BoundingBoxMax.y << "y "
+	// 			<< BoundingBoxMax.z << "z" << std::endl;
+
 	// create faces from indexes.
 	CreateObjFaces();
 	// set opengl buffers

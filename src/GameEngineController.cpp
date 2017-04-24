@@ -152,10 +152,10 @@ void	GameEngineController::LoadMatrices()
 {
 	// View matrices init;
 	MainCamera = new GameObject("MainCamera");
-	MainCamera->Position = glm::vec3(0.0, 2.0, 10.0);
+	MainCamera->Position = glm::vec3(0.0, 5.0, 10.0);
 	MatView = glm::lookAt(
 		MainCamera->Position,
-		glm::vec3(0.0, 0.0, 0.0), // regarde l'origine
+		CameraLookAt, // regarde l'origine
 		glm::vec3(0.0, 2.0, 0.0)  // La tête est vers le haut (utilisez 0,-1,0 pour regarder à l'envers) 
 	);
 
@@ -171,26 +171,33 @@ void	GameEngineController::LoadMatrices()
 
 /*
 **	For one object of our scene, apply model view projection matrices.
+**	Rotation is not working as intended. The pivot point is incorrect.
+**	Lots of inversions of matrices were tested, without success.
+**	Maybe the problem does not come from the matrices.
 */
 
 void GameEngineController::ApplyMatricesToObject(GameObject *Object)
 {
-	// generate model matrice for each GameObject.
-	// Identity matrice -> base for our calculations.
-	MatModelIdentity = glm::mat4();
-	// Translation
-	MatModelTranslation = glm::translate(MatModelIdentity, Object->Position);
-	// Rotation : x > y > z
-	MatModelRotation = glm::rotate(MatModelIdentity, (glm::mediump_float)Object->Rotation.x, glm::vec3(1.0, 0.0, 0.0));
-	MatModelRotation = glm::rotate(MatModelRotation, (glm::mediump_float)Object->Rotation.y, glm::vec3(0.0, 1.0, 0.0));
-	MatModelRotation = glm::rotate(MatModelRotation, (glm::mediump_float)Object->Rotation.z, glm::vec3(0.0, 0.0, 1.0));
-	// Scaling
-	MatModelScaling = glm::scale(MatModelIdentity, Object->Scale);
+	// Model matrice, multiplied on the spot with glm. Note that the order is reversed,
+	// As it seems glm reverses the way it calculates. (right hand multiplication)
+	MatModel = glm::mat4();
 
-	// Merge MODEL matrice.
-	MatModel = MatModelTranslation * MatModelRotation * MatModelScaling;
+	// translation
+	MatModel = glm::translate(MatModel, Object->Position);
 
-	// Merge MVP matrice.
+	// scaling
+	MatModel = glm::scale(MatModel, Object->Scale);
+
+	// added offset for recentering.
+	MatModel = glm::translate(MatModel, Object->BoundingBoxCenter);
+	// rotation
+	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+	// remove offset for recentering.
+	MatModel = glm::translate(MatModel, -Object->BoundingBoxCenter);
+
+	// Final MVP matrice mergin.
 	MatMVP = MatPerspectiveProjection * MatView * MatModel;
 
 	// Send it to shader.
@@ -264,6 +271,10 @@ void	GameEngineController::Draw()
 void	GameEngineController::Draw3DModels()
 {
 	glUseProgram(MainShaderProgramme);
+
+	// Reset Camera VIEW matrix for camera movement.
+	MatView = glm::lookAt(MainCamera->Position, CameraLookAt, glm::vec3(0.0, 2.0, 0.0));
+
 	// draw 3d objects
 	// run through each object to set their matrices and textures and draw them on screen.
 	for (std::vector<GameObject *>::iterator it = GameObjectList.begin();
@@ -325,4 +336,30 @@ void	GameEngineController::DrawTextObjects()
 	{
 		RenderText(*it);
 	}
+}
+
+// User access methods
+
+GameObject							*GameEngineController::GetCamera()
+{
+	return (MainCamera);
+}
+
+glm::vec3							*GameEngineController::GetCameraLookAt()
+{
+	return (&CameraLookAt);
+}
+
+void								GameEngineController::SetCamera(GameObject *NewCamera)
+{
+	if (MainCamera)
+	{
+		delete MainCamera;
+	}
+	MainCamera = NewCamera;
+}
+
+void								GameEngineController::SetCameraLookAt(glm::vec3 new_look_pos)
+{
+	CameraLookAt = new_look_pos;
 }
