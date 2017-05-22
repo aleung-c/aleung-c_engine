@@ -1,13 +1,35 @@
 #include "../includes/aleung-c_engine.hpp"
 
+// --------------------------------------------------------------------------------	//
+//																					//
+//	GAME ENGINE CONTROLLER															//
+//																					//
+//	This class is the core of the engine.											//
+//																					//
+//	It handles every core components of the engine.									//
+//	This means it init the GLFW window, the truetype library,						//
+//	and the main drawing loop and collected GameObject processing					//
+//	and displaying																	//
+//																					//
+// -------------------------------------------------------------------------------	//
+
+/*
+**	This is the engine's singleton instance. With this line, linking the engine
+**	through compilation will create the factory style object's creator.
+**	This line allows you to make var = new GameObject() and not have to consider the whole
+**	opengl loading/drawing.
+*/
+
+// ******************** SINGLETON PATTERN *************************************** //
+
 GameEngineController GameEngineController::m_instance = GameEngineController();
 
-// default constructor
-GameEngineController::GameEngineController()
-:
-DebugMode(false),
-EngineInitialized(false)
+// ******************** SINGLETON PATTERN *************************************** //
 
+// default constructor
+GameEngineController::GameEngineController() :
+	DebugMode(false),
+	EngineInitialized(false)
 {
 
 }
@@ -23,21 +45,26 @@ GameEngineController& GameEngineController::Instance()
 	return m_instance;
 }
 
-void		GameEngineController::InitEngine(int windowWidth, int windowHeight, std::string windowName)
+/*
+**	This method MUST be called through the game code, as it will set the 
+**	window and engine's variables. Your program will certainly segfault
+**	if this method is not called.
+*/
 
+void		GameEngineController::InitEngine(int windowWidth, int windowHeight, std::string windowName)
 {
 	WindowWidth = windowWidth;
 	WindowHeight = windowHeight;
 	WindowName = windowName;
-	if (InitGLFW() == -1
-		|| InitOpenGL() == -1
-		|| InitFreeType() == -1)
+	if (initGLFW() == -1
+		|| initOpenGL() == -1
+		|| initFreeType() == -1)
 	{
 		std::cout << "Initialization error. Exiting..." << std::endl;
 		exit (-1);
 	}
-	LoadShaders();
-	LoadMatrices();
+	loadShaders();
+	loadMatrices();
 	EngineInitialized = true;
 	if (DebugMode)
 	{
@@ -45,6 +72,10 @@ void		GameEngineController::InitEngine(int windowWidth, int windowHeight, std::s
 		std::cout << "GameEngineController: Engine initialized!" << std::endl;
 	}
 }
+
+/*
+**	Debug method for opengl related problems.
+*/
 
 void	GameEngineController::CheckForOpenGLErrors()
 {
@@ -72,7 +103,6 @@ void	GameEngineController::CheckForOpenGLErrors()
 		printf(KGRN "Text Shader programme linked%s\n", KRESET);
 	if (error == 0)
 		return ;
-
 	// check for opengl errors.
 	GLenum err = GL_NO_ERROR;
 	while ((err = glGetError()) != GL_NO_ERROR)
@@ -86,7 +116,14 @@ void	GameEngineController::CheckForOpenGLErrors()
 //																		//
 // --------------------------------------------------------------------	//
 
-int		GameEngineController::InitGLFW()
+/*
+**	The GLFW initialization handles the window and the openGL context.
+**	As this engine is made for small not good looking games, ill only load
+**	ONE context, and as such, ONE screen. For now, the resolution changing
+**	during runtime is not supported.
+*/
+
+int		GameEngineController::initGLFW()
 {
 	// start GL context and O/S window using the GLFW helper library
 	if (!glfwInit ())
@@ -110,8 +147,7 @@ int		GameEngineController::InitGLFW()
 	return (0);
 }
 
-
-int		GameEngineController::InitOpenGL()
+int		GameEngineController::initOpenGL()
 {
 	// get version info
 	const GLubyte* renderer = glGetString (GL_RENDERER); // get renderer string
@@ -138,129 +174,24 @@ int		GameEngineController::InitOpenGL()
 
 // --------------------------------------------------------------------	//
 //																		//
-//	Matrices															//
-//	This creates the usual MODEL - VIEW - PROJECTION					//
-//	matrice.															//
-//																		//
-// --------------------------------------------------------------------	//
-
-/*
-**	This method initialize the VIEW and PROJECTION matrices.
-**	The MODEL matrice will be set for each object at runtime.
-**	Same goes for the merge into the MVP matrice.
-*/
-
-void	GameEngineController::LoadMatrices()
-{
-	// View matrices init;
-	MainCamera = new GameObject("MainCamera");
-	MainCamera->Position = glm::vec3(0.0, 5.0, 10.0);
-	MatView = glm::lookAt(
-		MainCamera->Position,
-		CameraLookAt, // regarde l'origine
-		glm::vec3(0.0, 2.0, 0.0)  // La tête est vers le haut (utilisez 0,-1,0 pour regarder à l'envers) 
-	);
-
-	// Project matrices init;
-	CameraNear = 0.1;
-	CameraFar = 100.0;
-	CameraFov = 90.0;
-	CameraAspect = 1.77; // 4/3, 16/9, etc 1 = 4/4
-	MatPerspectiveProjection = glm::perspective(CameraFov, CameraAspect, CameraNear, CameraFar);
-
-	MatOrthographicProjection = glm::ortho(0.0f, (float)WindowWidth, 0.0f, (float)WindowHeight);
-}
-
-/*
-**	For one object of our scene, apply model view projection matrices.
-**	Rotation is not working as intended. The pivot point is incorrect.
-**	Lots of inversions of matrices were tested, without success.
-**	Maybe the problem does not come from the matrices.
-*/
-
-void GameEngineController::ApplyMatricesToObject(GameObject *Object)
-{
-	// Model matrice, multiplied on the spot with glm. Note that the order is reversed,
-	// As it seems glm reverses the way it calculates. (right hand multiplication)
-	MatModel = glm::mat4();
-
-	// translation
-	MatModel = glm::translate(MatModel, Object->Position);
-
-	// scaling
-	MatModel = glm::scale(MatModel, Object->Scale);
-
-	// added offset for recentering.
-	MatModel = glm::translate(MatModel, Object->BoundingBoxCenter);
-	// rotation
-	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.x), glm::vec3(1.0, 0.0, 0.0));
-	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.y), glm::vec3(0.0, 1.0, 0.0));
-	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.z), glm::vec3(0.0, 0.0, 1.0));
-	// remove offset for recentering.
-	MatModel = glm::translate(MatModel, -Object->BoundingBoxCenter);
-
-	// Final MVP matrice mergin.
-	MatMVP = MatPerspectiveProjection * MatView * MatModel;
-
-	// Send it to shader.
-	GLint uniform_mat = glGetUniformLocation(MainShaderProgramme, "mvp_matrix");
-	if (uniform_mat != -1)
-		glUniformMatrix4fv(uniform_mat, 1, GL_FALSE, &MatMVP[0][0]);
-}
-
-// --------------------------------------------------------------------	//
-//																		//
-//	Textures															//
-//	Handle the per object texturing										//
-//																		//
-// --------------------------------------------------------------------	//
-/*
-**	We will say that each object only has one texture...
-*/
-
-void	GameEngineController::LoadObjectTexture(GameObject *Object)
-{
-	GLuint			uniform_mat;
-
-	// we will only activate the number 0 texture. it may go up to 32 on newest graphic cards.
-	// mobile devices usually have only 2.
-	glActiveTexture(GL_TEXTURE0);
-
-	// "Bind" the object's texture : all future texture functions will modify this texture
-	glBindTexture(GL_TEXTURE_2D, Object->GetTextureID());
-
-	// Give the image to OpenGL
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Object->GetTexture().width, Object->GetTexture().height, 0,
-		GL_BGR, GL_UNSIGNED_BYTE, Object->GetTexture().data);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	// bind texture to fragment shader uniform sampler2D
-	uniform_mat = glGetUniformLocation(MainShaderProgramme, "texture_0");
-	glUniform1i(uniform_mat, 0);
-
-	// set fshader bool to true -> there is a texture loaded.
-	glUniform1i(glGetUniformLocation(MainShaderProgramme, "has_texture"), GL_TRUE);
-}
-
-// --------------------------------------------------------------------	//
-//																		//
 //	Engine side drawing													//
+//	To see each object rendering in detail,								//
+//	look at GameEngineController_rendering.cpp							//
 //																		//
 // --------------------------------------------------------------------	//
 
 /*
-**	Main drawing function. This will be called at each loop turn.
+**	Main public drawing function. This will be called at each loop turn,
+**	it MUST be used in the game's main loop.
 */
 
 void	GameEngineController::Draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	Draw3DModels();
-	DrawUIObjects();
-	DrawTextObjects();
+	draw3DModels();
+	drawUIObjects();
+	drawTextObjects();
 
 	// display on screen.
 	glfwSwapBuffers(Window);
@@ -270,7 +201,7 @@ void	GameEngineController::Draw()
 **	Run through and display each GameObject that has a model/texture.
 */
 
-void	GameEngineController::Draw3DModels()
+void	GameEngineController::draw3DModels()
 {
 	glUseProgram(MainShaderProgramme);
 
@@ -283,17 +214,7 @@ void	GameEngineController::Draw3DModels()
 		it != GameObjectList.end();
 		it++)
 	{
-		// texture loading.
-		if ((*it)->HasTexture == true)
-			LoadObjectTexture(*it);
-		else
-			glUniform1i(glGetUniformLocation(MainShaderProgramme, "has_texture"), GL_FALSE);
-		// opengl buffer loading.
-		if ((*it)->HasModel == true)
-		{
-			ApplyMatricesToObject(*it);
-			(*it)->DrawObject();
-		}
+		render3DGameObject(*it);
 	}
 }
 
@@ -302,7 +223,7 @@ void	GameEngineController::Draw3DModels()
 **	See GameEngineController_freetype_font.cpp
 */
 
-void	GameEngineController::DrawUIObjects()
+void	GameEngineController::drawUIObjects()
 {
 	glUseProgram(OrthoShaderProgramme);
 	// set projection matrice.
@@ -314,7 +235,7 @@ void	GameEngineController::DrawUIObjects()
 		it != GameUIObjectList.end();
 		it++)
 	{
-		RenderUIObject(*it);
+		renderGameUIObject(*it);
 	}
 }
 
@@ -324,7 +245,7 @@ void	GameEngineController::DrawUIObjects()
 **	rendering method as the textObject, but has only one quad to draw.
 */
 
-void	GameEngineController::DrawTextObjects()
+void	GameEngineController::drawTextObjects()
 {
 	glUseProgram(OrthoShaderProgramme);
 	// set projection matrice.
@@ -336,32 +257,6 @@ void	GameEngineController::DrawTextObjects()
 		it != GameTextObjectList.end();
 		it++)
 	{
-		RenderText(*it);
+		renderGameTextObject(*it);
 	}
-}
-
-// User access methods
-
-GameObject							*GameEngineController::GetCamera()
-{
-	return (MainCamera);
-}
-
-glm::vec3							*GameEngineController::GetCameraLookAt()
-{
-	return (&CameraLookAt);
-}
-
-void								GameEngineController::SetCamera(GameObject *NewCamera)
-{
-	if (MainCamera)
-	{
-		delete MainCamera;
-	}
-	MainCamera = NewCamera;
-}
-
-void								GameEngineController::SetCameraLookAt(glm::vec3 new_look_pos)
-{
-	CameraLookAt = new_look_pos;
 }

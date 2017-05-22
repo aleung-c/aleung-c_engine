@@ -24,7 +24,7 @@ class GameUIObject
 		void							LoadTexture();
 		GLuint							GetVao();
 		GLuint							GetVbo();
-		t_bmp_texture					GetTexture();
+		t_bmp_texture					&GetTexture();
 		GLuint							GetTextureID();
 
 	private:

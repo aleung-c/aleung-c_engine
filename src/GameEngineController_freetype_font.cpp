@@ -16,7 +16,7 @@
 //																		//
 // --------------------------------------------------------------------	//
 
-int		GameEngineController::InitFreeType()
+int		GameEngineController::initFreeType()
 {
 	if (FT_Init_FreeType(&FT_Lib))
 	{
@@ -37,7 +37,7 @@ int		GameEngineController::InitFreeType()
 		return (-1);
 	}
 	FT_Set_Pixel_Sizes(Face, 0, 48);
-	LoadFreeTypesCharacters();
+	loadFreeTypesCharacters();
 	return (0);
 }
 
@@ -46,7 +46,7 @@ int		GameEngineController::InitFreeType()
 **	that we will use to draw our letters.
 */
 
-void	GameEngineController::LoadFreeTypesCharacters()
+void	GameEngineController::loadFreeTypesCharacters()
 {
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
 	for (GLubyte c = 0; c < 128; c++)
@@ -83,54 +83,4 @@ void	GameEngineController::LoadFreeTypesCharacters()
 	}
 	FT_Done_Face(Face);
 	FT_Done_FreeType(FT_Lib);
-}
-
-// --------------------------------------------------------------------	//
-//																		//
-//	Text																//
-//	Handle displaying of GameTextObjects								//
-//																		//
-// --------------------------------------------------------------------	//
-
-void	GameEngineController::RenderText(GameTextObject *obj)
-{
-	glUniform3f(glGetUniformLocation(OrthoShaderProgramme, "textColor"),
-		obj->Color.x, obj->Color.y, obj->Color.z);
-	glBindVertexArray(obj->GetVao());
-	tmp_x = obj->Position.x;
-	tmp_y = obj->Position.y;
-	// Iterate through all characters of the string.
-	for (std::string::const_iterator c = obj->Text.begin();
-		c != obj->Text.end();
-		c++)
-	{
-		ch = Characters[*c]; // take the struct in the map.
-
-		xpos = tmp_x + ch.Bearing.x * obj->Scale;
-		ypos = tmp_y - (ch.Size.y - ch.Bearing.y) * obj->Scale;
-
-		w = ch.Size.x * obj->Scale;
-		h = ch.Size.y * obj->Scale;
-		// Creates two triangles forming a quad.
-		GLfloat vertices[6][4] = {
-			{ xpos,     ypos + h,   0.0, 0.0 },
-			{ xpos,     ypos,       0.0, 1.0 },
-			{ xpos + w, ypos,       1.0, 1.0 },
-			{ xpos,     ypos + h,   0.0, 0.0 },
-			{ xpos + w, ypos,       1.0, 1.0 },
-			{ xpos + w, ypos + h,   1.0, 0.0 }
-		};
-		// bind character texture, then put the vertices in the object's buffer.
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-		glBindBuffer(GL_ARRAY_BUFFER, obj->GetVbo());
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
-		glEnableVertexAttribArray(0);
-		// then draw
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		// Advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		tmp_x += (ch.Advance >> 6) * obj->Scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
-	}
-	glDisableVertexAttribArray(0);
 }

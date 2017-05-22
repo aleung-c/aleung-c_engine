@@ -6,7 +6,15 @@
 //																		//
 // --------------------------------------------------------------------	//
 
-void	GameEngineController::LoadShaders()
+/*
+**	I made the engine with two simples shaders,
+**	one for the 3d objects with a perspective representation,
+**	and another for the orthographically represented objects,
+**	that are the text objects, generated through freetype,
+**	and the UI textured components.
+*/
+
+void	GameEngineController::loadShaders()
 {
 	// -------------------------------------------------------------------------- //
 	//	3d model Shaders -> main shader											  //

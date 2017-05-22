@@ -19,9 +19,10 @@ GameObject::GameObject(std::string objName)
 {
 	HasModel = false;
 	HasTexture = false;
+	_objTexture = NULL;
 	ObjPath = "";
 	Name = objName;
-	InitValues();
+	initValues();
 
 	// Add this object to the engine's list of objects.
 	GameEngineController::Instance().GameObjectList.push_back(this);
@@ -46,16 +47,19 @@ GameObject::GameObject(std::string objName, std::string path)
 	Name = objName;
 	ObjPath = path;
 	HasModel = true;
+	HasTexture = false;
+	_objTexture = NULL;
 	// set initial values to zero.
-	InitValues();
+	initValues();
 	// Parse the obj file to scoop values.
-	GetObjValues(file);
+	getObjValues(file);
 	// set bounding box center -> object math center.
-	BoundingBoxCenter.x = (BoundingBoxMin.x + BoundingBoxMax.x) / 2;
-	BoundingBoxCenter.y = (BoundingBoxMin.y + BoundingBoxMax.y) / 2;
-	BoundingBoxCenter.z = (BoundingBoxMin.z + BoundingBoxMax.z) / 2;
+	BoundingBoxCenter.x = ((BoundingBoxMin.x + BoundingBoxMax.x) / 2.0);
+	BoundingBoxCenter.y = ((BoundingBoxMin.y + BoundingBoxMax.y) / 2.0);
+	BoundingBoxCenter.z = ((BoundingBoxMin.z + BoundingBoxMax.z) / 2.0);
 
-	// ----- PRINT Bounding box
+
+	// // ----- PRINT Bounding box
 	// std::cout << "min = " << BoundingBoxMin.x << "x "
 	// 			<< BoundingBoxMin.y << "y "
 	// 			<< BoundingBoxMin.z << "z" << std::endl;
@@ -66,19 +70,19 @@ GameObject::GameObject(std::string objName, std::string path)
 
 	// std::cout << "max = " << BoundingBoxMax.x << "x "
 	// 			<< BoundingBoxMax.y << "y "
-	// 			<< BoundingBoxMax.z << "z" << std::endl;
+	// 			<< BoundingBoxMax.z << "z" << std::endl << std::endl;
 
 	// create faces from indexes.
-	CreateObjFaces();
+	createObjFaces();
 	// set opengl buffers
-	SetBuffers();
+	setBuffers();
 	// load texture.
-	LoadTexture();
+	loadTexture();
 	// Add this object to the engine's list of objects.
 	GameEngineController::Instance().GameObjectList.push_back(this);
 }
 
-void		GameObject::InitValues()
+void		GameObject::initValues()
 {
 	Position = glm::vec3(0.0, 0.0, 0.0);
 	// for now, we will imagine euleur rotations.
@@ -97,7 +101,7 @@ GameObject::~GameObject()
 
 }
 
-void	GameObject::CreateObjFaces()
+void	GameObject::createObjFaces()
 {
 	int i = 0;
 
@@ -112,9 +116,24 @@ void	GameObject::CreateObjFaces()
 		_objFacesUVs.push_back(_objUVs[_objUVIndices[i] - 1]);
 		i++;
 	}
+	// ------ Set nb of values variables for quick access.
+	_nbFaceVertices = _objFacesVertices.size();
+	_nbFaces = _nbFaceVertices / 3;
 }
 
-void		GameObject::SetBuffers()
+/*
+**	A note on the buffers. I am not withouth knowing of the elements buffer,
+**	that could take my vertice list and use their index for drawing triangles quickly.
+**	However, I went with another way for listing my faces, that is, I created a buffer
+**	with every vertex for every face, arranged three by three.
+**
+**	That means YES, THERE IS OVERHEAD on the vertex loading, as a vertex can
+**	be copied several time into the buffer.
+**	I just prefer this way of loading the models as I am not limited in the number
+**	of buffers, as it is the case with the element array.
+*/
+
+void		GameObject::setBuffers()
 {
 	// -------------------------------------------------------------------------- //
 	//	VAO - Vertex Array object												  //
@@ -158,7 +177,7 @@ void		GameObject::SetBuffers()
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	glEnableVertexAttribArray(2);
 	
-	// the color buffer cbo.
+	// the color buffer cbo. // UNUSED, as it is mainly made for randomly coloring faces.
 	// sc->cbo = 0;
 	// glGenBuffers(1, &(_cbo));
 
@@ -184,53 +203,195 @@ void		GameObject::SetBuffers()
 **	name, and with the .bmp extension.
 */
 
-void		GameObject::LoadTexture()
+void		GameObject::loadTexture()
 {
 	std::string texPath = ObjPath;
 	texPath.resize(ObjPath.size() - 4);
 	texPath.append(".bmp", 4);
-	if ((GameEngineController::LoadTextureFile(&_objTexture, texPath)) == -1)
+	_objTexture = (t_bmp_texture *)malloc(sizeof(t_bmp_texture));
+	if ((GameEngineController::LoadTextureFile(_objTexture, texPath)) == -1)
 	{
 		HasTexture = false;
+		free(_objTexture);
+		_objTexture = NULL;
 		return ;
 	}
+	// the loaded texture is now in this->_objTexture
 	HasTexture = true;
 	glGenTextures(1, &_ObjTextureID);
 }
+
+/*
+**	If an object is already textured, you can load a new texture with this method.
+**	However, this is not the recommended method if you want to change texture many
+**	times during runtime, as it will open and parse the texture file each time
+**	it is called. This one is to be used casually.
+**
+**	For runtime multi texture buffering, use the SetTexture() public method, and load
+**	bmp textures objects in your game code.
+*/
+
+void		GameObject::LoadNewTexture(std::string path)
+{
+	if (HasTexture == true)
+	{
+		glDeleteTextures(1, &_ObjTextureID);
+		free(_objTexture->data);
+		free(_objTexture);
+		HasTexture = false;
+	}
+	if ((GameEngineController::LoadTextureFile(_objTexture, path)) == -1)
+	{
+		return ;
+	}
+	// the loaded texture is now in this->_objTexture
+	HasTexture = true;
+	glGenTextures(1, &_ObjTextureID);
+}
+
+
+// --------------------------------------------------------------------	//
+//	GameObject's accessors												//
+// --------------------------------------------------------------------	//
+
+/*
+**	Returns the object's vertex array object.
+*/
+
+GLuint		GameObject::GetVao()
+{
+	return (_vao);
+}
+
+/*
+**	Returns the object's number of vertex for each triangle.
+*/
+
+int		GameObject::GetNbFaceVertices()
+{
+	return (_nbFaceVertices);
+}
+
+/*
+**	Returns the object's number of face triangle.
+*/
+
+int		GameObject::GetNbFaces()
+{
+	return (_nbFaces);
+}
+
+/*
+**	Returns the object's face vertex buffer object.
+**	This is the one used for drawing.
+*/
+
+GLuint		GameObject::GetFvbo()
+{
+	return (_fvbo);
+}
+
+/*
+**	Returns the object's vertex buffer object.
+*/
+
+GLuint		GameObject::GetVbo()
+{
+	return (_vbo);
+}
+
+/*
+**	Returns the object's normal buffer object.
+*/
+
+GLuint		GameObject::GetNbo()
+{
+	return (_nbo);
+}
+
+/*
+**	Returns the object's face UV buffer object.
+**	Used to apply texture to faces.
+*/
+
+GLuint		GameObject::GetFubo()
+{
+	return (_fubo);
+}
+
+/*
+**	Returns the object's texture buffer id.
+*/
 
 GLuint		GameObject::GetTextureID()
 {
 	return (_ObjTextureID);
 }
 
-t_bmp_texture		&GameObject::GetTexture()
+/*
+**	Returns the object's bmp texture object.
+*/
+
+t_bmp_texture		*GameObject::GetTexture()
 {
 	return (_objTexture);
 }
 
-void		GameObject::DrawObject()
+
+
+/*
+**	Set the object's bmp texture object. Use this to quickly switch between
+**	loaded textures during runtime.
+**	Make sure the new texture is the same size and is identically mapped
+**	as the previous texture.
+**	Otherwise the behavior is undefined.
+**	Note that this does NOT free the old texture pointer.
+**	Use LoadNewTexture(std::string path)
+**	or ReplaceTexture(t_bmp_texture *newTexture) for this.
+*/
+
+int			GameObject::SwapTexture(t_bmp_texture *newTexture)
 {
-	if (HasModel == true)
+	if (HasTexture == true)
 	{
-		// ------ load the uvs for the object - LOCATION = 1
-		glBindBuffer(GL_ARRAY_BUFFER, _fubo);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-		glEnableVertexAttribArray(1);
-
-		// ------ load vertex and draw them - LOCATION = 0
-		// ------ To display only points from vertex
-		// glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		// glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
-		// glEnableVertexAttribArray(0);
-		// glDrawArrays (GL_POINTS, 0, _objVertices.size());
-		// ------ To display triangles from faces vertex
-		glBindBuffer(GL_ARRAY_BUFFER, _fvbo);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
-		glEnableVertexAttribArray(0);
-		glDrawArrays(GL_TRIANGLES, 0, _objFacesVertices.size());
-
-		// ----- disable all after draw;
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
+		glDeleteTextures(1, &_ObjTextureID);
 	}
+	if (newTexture)
+	{
+		this->_objTexture = newTexture;
+		glGenTextures(1, &_ObjTextureID);
+	}
+	else
+	{
+		HasTexture = false;
+		return (-1);
+	}
+	return (0);
 }
+
+/*
+**	Changes the t_bmp_texture by the new one, and delete and free the previous texture.
+*/
+
+int			GameObject::ReplaceTexture(t_bmp_texture *newTexture)
+{
+	if (HasTexture == true)
+	{
+		glDeleteTextures(1, &_ObjTextureID);
+		free(_objTexture->data);
+		free(_objTexture);
+	}
+	if (newTexture)
+	{
+		this->_objTexture = newTexture;
+		glGenTextures(1, &_ObjTextureID);
+	}
+	else
+	{
+		HasTexture = false;
+		this->_objTexture = NULL;
+		return (-1);
+	}
+	return (0);
+}
+

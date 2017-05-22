@@ -4,7 +4,7 @@
 ** The loader for our obj files.
 */
 
-void		GameObject::GetObjValues(FILE *file)
+void		GameObject::getObjValues(FILE *file)
 {
 	while (1)
 	{
@@ -12,7 +12,9 @@ void		GameObject::GetObjValues(FILE *file)
 		// read the first word of the line
 		int res = fscanf(file, "%s", lineHeader);
 		if (res == EOF)
+		{
 			break ;
+		}
 		else
 		{
 			if (strncmp(lineHeader, "v", 3) == 0)

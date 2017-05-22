@@ -2,9 +2,10 @@
 
 // --------------------------------------------------------------------	//
 //																		//
-//	The class for a game object that is textual.						//
+//	The class for a game object that is text only.						//
 //	A new class seems useful because the text are not handled the same	//
 //	way as a 3d model.													//
+//																		//
 // --------------------------------------------------------------------	//
 
 GameUIObject::GameUIObject(std::string name, std::string imgPath)
@@ -87,7 +88,7 @@ GLuint	GameUIObject::GetVbo()
 	return (_vbo);
 }
 
-t_bmp_texture		GameUIObject::GetTexture()
+t_bmp_texture		&GameUIObject::GetTexture()
 {
 	return (_objTexture);
 }

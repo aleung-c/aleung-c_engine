@@ -2,6 +2,7 @@
 
 /*
 **	Get the content of a file and returns it as a char *.
+**	Public static method.
 */
 
 char		*GameEngineController::GetFileContent(std::string file_path)
@@ -42,12 +43,19 @@ char		*GameEngineController::GetFileContent(std::string file_path)
 
 /*
 **	Get the content of a bmp file and returns it in the argument t_bmp_texture *.
+**	Public static method.
 */
 
 int		GameEngineController::LoadTextureFile(t_bmp_texture *texture, std::string path)
 {
 	// Open the file
 	FILE	*file;
+
+	if (!texture)
+	{
+		std::cout << "Unallocated texture object. Allocate it with malloc()" << path << std::endl;
+		return (-1);
+	}
 
 	file = fopen(path.c_str(), "rb");
 	if (!file)
@@ -57,8 +65,8 @@ int		GameEngineController::LoadTextureFile(t_bmp_texture *texture, std::string p
 	}
 	if (fread(texture->header, 1, 54, file) != 54)
 	{ // If not 54 bytes read == problem
-    	std::cout << "Not a correct BMP file: " << path << std::endl;
-    	return (-1);
+		std::cout << "Not a correct BMP file: " << path << std::endl;
+		return (-1);
 	}
 	texture->data_pos = *(int*)&(texture->header[10]);
 	texture->image_size = *(int*)&(texture->header[34]);

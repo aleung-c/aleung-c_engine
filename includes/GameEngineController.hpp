@@ -76,43 +76,50 @@ class	GameEngineController
 		std::map<GLchar, Character>			Characters;
 
 
+		// ----- Public Engine's methods.
 		GameEngineController();
 		~GameEngineController();
 
 		void								InitEngine(int windowWidth, int windowHeight, std::string WindowName);
-		
-		int									InitGLFW();
-		int									InitOpenGL();
-		int									InitFreeType();
-		void								LoadFreeTypesCharacters();
-
-
 		void								CheckForOpenGLErrors();
-
-		void								LoadShaders();
-
-		static char							*GetFileContent(std::string file_path);
-		static int							LoadTextureFile(t_bmp_texture *texture, std::string path);
-
-		void								LoadMatrices();
-		void								ApplyMatricesToObject(GameObject *Object);
-		void								LoadObjectTexture(GameObject *Object);
-		void								RenderText(GameTextObject *obj);
-
 		void								Draw();
-		void								Draw3DModels();
-		void								DrawUIObjects();
-		void								DrawTextObjects();
 
-		void								RenderUIObject(GameUIObject *obj);
+		static int							LoadTextureFile(t_bmp_texture *texture, std::string path);
+		static char							*GetFileContent(std::string file_path);
 
-		// User access
 		GameObject							*GetCamera();
 		glm::vec3							*GetCameraLookAt();
 		void								SetCamera(GameObject *NewCamera);
 		void								SetCameraLookAt(glm::vec3 new_look_pos);
 
 	private:
+		// ----- Initialization methods.
+			
+		int									initGLFW();
+		int									initOpenGL();
+		int									initFreeType();
+		void								loadFreeTypesCharacters();
+
+		// ----- Shaders.
+		void								loadShaders();
+		
+		// ----- Matrice handling.
+		void								loadMatrices();
+		void								applyMatricesToObject(GameObject *Object);
+		// ----- Textures.
+		void								loadObjectTexture(GameObject *Object);
+
+
+		// ----- Object drawing.
+		void								draw3DModels();
+		void								drawUIObjects();
+		void								drawTextObjects();
+
+		// ----- Object rendering.
+		void								render3DGameObject(GameObject *obj);
+		void								renderGameUIObject(GameUIObject *obj);
+		void								renderGameTextObject(GameTextObject *obj);
+
 		static GameEngineController			m_instance;
 
 		// ------ Font tmp vars ------

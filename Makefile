@@ -10,7 +10,10 @@ SRC = ./src/GameEngineController.cpp \
 ./src/GameEngineController_freetype_font.cpp \
 ./src/GameEngineController_parsing.cpp \
 ./src/GameEngineController_shaders.cpp \
-./src/GameEngineController_UI.cpp \
+./src/GameEngineController_textures.cpp \
+./src/GameEngineController_matrices.cpp \
+./src/GameEngineController_camera.cpp \
+./src/GameEngineController_rendering.cpp \
 ./src/GameObject.cpp \
 ./src/GameObject_Parsing.cpp \
 ./src/GameUIObject.cpp \
