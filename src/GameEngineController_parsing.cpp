@@ -3,6 +3,7 @@
 /*
 **	Get the content of a file and returns it as a char *.
 **	Public static method.
+**	Thoses error are fatal as they impeach the loading of models.
 */
 
 char		*GameEngineController::GetFileContent(std::string file_path)
@@ -44,28 +45,40 @@ char		*GameEngineController::GetFileContent(std::string file_path)
 /*
 **	Get the content of a bmp file and returns it in the argument t_bmp_texture *.
 **	Public static method.
+**	Those errors are not fatal, and as such are hidden when not in debug mode.
 */
 
 int		GameEngineController::LoadTextureFile(t_bmp_texture *texture, std::string path)
 {
 	// Open the file
 	FILE	*file;
+	bool	debugMode;
 
+	debugMode = GameEngineController::Instance().DebugMode;
 	if (!texture)
 	{
-		std::cout << "Unallocated texture object. Allocate it with malloc()" << path << std::endl;
+		if (debugMode)
+		{
+			std::cout << "Unallocated texture object. Allocate it with malloc()" << path << std::endl;
+		}
 		return (-1);
 	}
 
 	file = fopen(path.c_str(), "rb");
 	if (!file)
 	{
-		std::cout << "Image could not be opened: " << path << std::endl;
+		if (debugMode)
+		{
+			std::cout << "Image could not be opened: " << path << std::endl;
+		}
 		return (-1);
 	}
-	if (fread(texture->header, 1, 54, file) != 54)
-	{ // If not 54 bytes read == problem
-		std::cout << "Not a correct BMP file: " << path << std::endl;
+	if (fread(texture->header, 1, 54, file) != 54)  // If not 54 bytes read == problem
+	{
+		if (debugMode)
+		{
+			std::cout << "Not a correct BMP file: " << path << std::endl;
+		}
 		return (-1);
 	}
 	texture->data_pos = *(int*)&(texture->header[10]);
@@ -74,7 +87,10 @@ int		GameEngineController::LoadTextureFile(t_bmp_texture *texture, std::string p
 	texture->height = *(int*)&(texture->header[22]);
 	if ( texture->header[0] != 'B' || texture->header[1] != 'M' )
 	{
-		std::cout << "Not a correct BMP file: " << path << std::endl;
+		if (debugMode)
+		{
+			std::cout << "Not a correct BMP file: " << path << std::endl;
+		}
 		return (-1);
 	}
 	// Debug print.

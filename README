@@ -208,6 +208,11 @@ All this means that there are several methods for removing/replacing/swapping te
 The goal here was to have all tools at hand to have either some simple texture loading, or to be able to make a pool of textures,
 swapped over during gameplay.
 
+However, a shared pool of texture has been added to the engine. That means if you load several textures with the same path,
+the texture will be reused. This reduces the overhead and the context changing, but it may cause memory corruption problems
+when you free a texture. Be extra careful with freeing textures methods, that are ReplaceTexture(), ClearTexture(), LoadNewTexture(),
+as they may destroy other objects' texture and cause some segfault.
+
     f. Collisions.
 
 For now, the collisions must be handled gameplayside. However, every object has a bounding box that is set from the smallest vertex

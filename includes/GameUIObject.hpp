@@ -13,7 +13,6 @@ class GameUIObject : public EngineObject
 	private:
 		void							initValues();
 		void							setBuffers();
-		void							loadTexture();
 };
 
 #endif

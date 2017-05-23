@@ -33,8 +33,10 @@ class EngineObject
 		int								SwapTexture(t_bmp_texture *newTexture);
 		int								ReplaceTexture(t_bmp_texture *newTexture);
 		void							ClearTexture();
+		void							LoadNewTexture(std::string path);
 
 	protected:
+		void							loadTexture(std::string texPath);
 		bool							_hasTexture;
 		GLuint							_vao;
 		GLuint							_vbo;

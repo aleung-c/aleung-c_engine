@@ -22,10 +22,6 @@ class GameObject : public EngineObject
 
 		// GameObject's public methods.
 
-		// ----- User Called methods
-		void							LoadNewTexture(std::string path);
-
-
 		// Accessors
 		int								GetNbFaceVertices();
 		int								GetNbFaces();
@@ -39,7 +35,7 @@ class GameObject : public EngineObject
 		void							getObjValues(FILE *file);
 		void							createObjFaces();
 		void							setBuffers();
-		void							loadTexture();
+
 
 		// OpenGl - Obj loading
 		GLuint							_fvbo; // face vertex buffer object -> for 3d faces

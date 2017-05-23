@@ -80,6 +80,7 @@ enum EngineObjectType
 typedef struct						s_bmp_texture
 {
 	// Data read from the header of the BMP file
+	std::string						texture_path;
 	unsigned char					header[54]; // Each BMP file begins by a 54-bytes header
 	unsigned int					data_pos;     // Position in the file where the actual data begins
 	unsigned int					width;
@@ -106,12 +107,14 @@ struct Character {
 */
 
 class				EngineObject; // mother class to engine's objects.
+class				TextureManager;
 class				GameObject;
 class				GameTextObject;
 class				GameUIObject;
 class				GameEngineController;
 
 # include "EngineObject.hpp"
+# include "TextureManager.hpp"
 # include "GameObject.hpp"
 # include "GameTextObject.hpp"
 # include "GameUIObject.hpp"

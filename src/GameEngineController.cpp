@@ -60,7 +60,7 @@ void		GameEngineController::InitEngine(int windowWidth, int windowHeight, std::s
 		|| initOpenGL() == -1
 		|| initFreeType() == -1)
 	{
-		std::cout << "Initialization error. Exiting..." << std::endl;
+		std::cout << "Fatal error: Initialization error. Exiting..." << std::endl;
 		exit (-1);
 	}
 	loadShaders();
@@ -90,7 +90,12 @@ void	GameEngineController::CheckForOpenGLErrors()
 		error = -1;
 	}
 	else
-		printf(KGRN "Main Shader programme linked%s\n", KRESET);
+	{
+		if (DebugMode)
+		{
+			printf(KGRN "Main Shader programme linked%s\n", KRESET);
+		}
+	}
 	// check if ortho shader is compiled and linked;
 	isLinked = 0;
 	glGetProgramiv(OrthoShaderProgramme, GL_LINK_STATUS, &isLinked);
@@ -100,7 +105,12 @@ void	GameEngineController::CheckForOpenGLErrors()
 		error = -1;
 	}
 	else
-		printf(KGRN "Text Shader programme linked%s\n", KRESET);
+	{
+		if (DebugMode)
+		{
+			printf(KGRN "Text Shader programme linked%s\n", KRESET);
+		}
+	}
 	if (error == 0)
 		return ;
 	// check for opengl errors.
@@ -149,11 +159,14 @@ int		GameEngineController::initGLFW()
 
 int		GameEngineController::initOpenGL()
 {
-	// get version info
-	const GLubyte* renderer = glGetString (GL_RENDERER); // get renderer string
-	const GLubyte* version = glGetString (GL_VERSION); // version as a string
-	std::cout << "Renderer: " << renderer << std::endl;
-	std::cout << "OpenGL version supported " << version << std::endl;
+	if (DebugMode)
+	{
+		// get version info
+		const GLubyte* renderer = glGetString (GL_RENDERER); // get renderer string
+		const GLubyte* version = glGetString (GL_VERSION); // version as a string
+		std::cout << "Renderer: " << renderer << std::endl;
+		std::cout << "OpenGL version supported " << version << std::endl;
+	}
 
 	//glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_DEPTH_TEST);

@@ -77,7 +77,10 @@ GameObject::GameObject(std::string objName, std::string path)
 	// set opengl buffers
 	setBuffers();
 	// load texture.
-	loadTexture();
+	std::string texPath = ObjPath;
+	texPath.resize(ObjPath.size() - 4);
+	texPath.append(".bmp", 4);
+	loadTexture(texPath);
 	// Add this object to the engine's list of objects.
 	GameEngineController::Instance().GameObjectList.push_back(this);
 }
@@ -194,63 +197,6 @@ void		GameObject::setBuffers()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 	glEnableVertexAttribArray(1);
 }
-
-/*
-**	Once the buffer and faces are set, ill load the texture in memory.
-**	Ill assume the texture is in the same directory as the .obj, with the same
-**	name, and with the .bmp extension.
-*/
-
-void		GameObject::loadTexture()
-{
-	std::string texPath = ObjPath;
-	texPath.resize(ObjPath.size() - 4);
-	texPath.append(".bmp", 4);
-	_objTexture = (t_bmp_texture *)malloc(sizeof(t_bmp_texture));
-	if ((GameEngineController::LoadTextureFile(_objTexture, texPath)) == -1)
-	{
-		_hasTexture = false;
-		free(_objTexture);
-		_objTexture = NULL;
-		return ;
-	}
-	// the loaded texture is now in this->_objTexture
-	_hasTexture = true;
-	glGenTextures(1, &_objTextureID);
-}
-
-/*
-**	If an object is already textured, you can load a new texture with this method.
-**	However, this is not the recommended method if you want to change texture many
-**	times during runtime, as it will open and parse the texture file each time
-**	it is called. This one is to be used casually.
-**
-**	For runtime multi texture buffering, use the SetTexture() public method, and load
-**	bmp textures objects in your game code.
-*/
-
-void		GameObject::LoadNewTexture(std::string path)
-{
-	if (_hasTexture == true)
-	{
-		glDeleteTextures(1, &_objTextureID);
-		free(_objTexture->data);
-		free(_objTexture);
-		_hasTexture = false;
-	}
-	if (!_objTexture)
-	{
-		_objTexture = (t_bmp_texture *)malloc(sizeof(t_bmp_texture));
-	}
-	if ((GameEngineController::LoadTextureFile(_objTexture, path)) == -1)
-	{
-		return ;
-	}
-	// the loaded texture is now in this->_objTexture
-	_hasTexture = true;
-	glGenTextures(1, &_objTextureID);
-}
-
 
 // --------------------------------------------------------------------	//
 //	GameObject's accessors												//

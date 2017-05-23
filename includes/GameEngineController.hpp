@@ -13,15 +13,17 @@
 class	GameEngineController
 {
 	public:
-		// this is a singleton
+		// ----- singleton -----
 		static GameEngineController&		Instance();
+		// ----- singleton -----
+
+		bool								DebugMode;
 
 		int									WindowWidth;
 		int									WindowHeight;
 		std::string							WindowName;
 		GLFWwindow							*Window;
-
-		bool								DebugMode;
+		
 		bool								EngineInitialized;
 
 		// ------ Engine's objects handling ------
@@ -29,6 +31,8 @@ class	GameEngineController
 		std::vector<GameTextObject *>		GameTextObjectList;
 		std::vector<GameUIObject *>			GameUIObjectList;
 
+		// ------ Engine's textures handling ------
+		TextureManager						TextureManager;
 
 		// ------ Engine's Camera handling ------
 		GameObject							*MainCamera;
