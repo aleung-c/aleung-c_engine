@@ -40,10 +40,14 @@ class GameObject
 		GLuint							GetVbo();
 		GLuint							GetNbo();
 		GLuint							GetFubo();
+
 		GLuint							GetTextureID();
 		t_bmp_texture					*GetTexture();
+
+		// ----- Texture handling methods.
 		int								SwapTexture(t_bmp_texture *newTexture);
 		int								ReplaceTexture(t_bmp_texture *newTexture);
+		void							ClearTexture();
 	
 	private:
 		// ----- Construct init Methods

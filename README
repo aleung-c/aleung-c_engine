@@ -13,6 +13,7 @@ Summary:
         c. Putting objects on our screen.
         d. Differents objects, different uses.
         e. Texturing the objects on runtime.
+        f. Collisions.
     III. Credits.
 
 This game engine is an overlay of classes and functions that can be put in code to
@@ -100,7 +101,7 @@ To use the engine, you must before almost everything else init the engine like t
     GameEngine->Init(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
 
 This will create a window with the specified arguments.
-Then, you should have a loop such as this:
+Then, you should have a main loop such as this:
 
     Game.InitGame();
     while (!glfwWindowShouldClose(GameEngine->Window))
@@ -141,18 +142,27 @@ To put an object in the world, you should just do this:
 
 This will put the object in the engine's list of object, and draw it when 
 asked.
-The texture must have the same name as the obj and be in the same folder,
-with only the extension modified in bmp, for example : "./ressources/Model.bmp"
+If you want to simply texture this object, you must have a texture with
+the same name as the obj in the same folder, with only the extension modified in bmp,
+for example : "./ressources/Model.bmp"
+Look at chapter II.e for more possibilities with textures.
 
 You can add as many GameObject as you wish, they will all be drawn with the draw() call.
 
     d. Differents objects, different uses.
 
 In the same idea, you can create GameUIObject, requiring a picture, that will be put on
-screen as a 2d element over the 3d objects(that's a UI picture alright).
+screen as a 2d element over the 3d objects (An UI picture in short).
 
 And then, you can add GameTextObject elements, which will put text on the screen, as 2D
 elements as well, and which will be on top of the ui elements.
+
+These classes are used very similarly to the base GameObject, with these constructors:
+
+    GameUIObject(std::string name, std::string imgPath);
+
+    GameTextObject(std::string name, std::string text);
+
 
 With these three classes, you can start making games, as their glm::vec3 Position, Rotation, and Scale
 can be modified, and will be reflected in the draw() calls.
@@ -164,7 +174,7 @@ that can be easily put on the screen and modified through code.
 
 When a GameObject is instanciated, the engine will try to load the same name of .obj but with .bmp extension
 to load a default texture. This is useful if you have obj1.obj and in the same folder obj1.bmp.
-It makes a automatic texture loading.
+It does an automatic texture loading.
 
 However, games may require the texture to be changed on the spot. This means we must change the texture in our objects.
 Inside the GameObject, or any textured object, there is a t_bmp_texture struct variable. To change this, you may do as such:
@@ -174,20 +184,39 @@ Inside the GameObject, or any textured object, there is a t_bmp_texture struct v
     Character->LoadNewTexture("./ressources/newTexture.bmp");
 
 This way of changing the texture will parse the new file you give it. It is cool, sure, but if you call it several times,
-it will create performance problems. There is the right way to do it if you want to stock multiple textures.
+it will create performance problems.
+There is the right way to do it if you want to stock multiple textures in some sort of pool:
 
     GameObject      *Character = new GameObject("Character", "./ressources/Model.obj");
 
     t_bmp_texture   new_texture_1;
     t_bmp_texture   new_texture_2;
 
-    new_texture_1 = GameEngineController::LoadTextureFile
+    GameEngineController::LoadTextureFile(new_texture_1, "./ressources/new_texture.bmp");
 
+    // if the obj already has a texture
+    Character->ClearTexture();
+ 
+    Character->SwapTexture(new_texture_1);
+    ....
+    Character->SwapTexture(new_texture_2);
 
+Know that if the character already has a texture and you swap over it, the previous texture will be a leak.
+If you want to change the texture only once and want the previous texture leaked, you can also use ReplaceTexture(t_bmp_texture *).
+
+All this means that there are several methods for removing/replacing/swapping textures, that should be used according to case.
+The goal here was to have all tools at hand to have either some simple texture loading, or to be able to make a pool of textures,
+swapped over during gameplay.
+
+    f. Collisions.
+
+For now, the collisions must be handled gameplayside. However, every object has a bounding box that is set from the smallest vertex
+to the biggest vertex. Meaning you virtually have access to a square bounding box.
+Note for thought: Ill surely turn this into a engine side collision system, with a flag system to activate/deactivate the collision
+research, as it is a performance chokepoint.
 
 III. Credits
 
-Credits:
 - aleung-c (the author)
 - Joey de Vries from learnopengl.com, particularly https://learnopengl.com/#!In-Practice/Text-Rendering.
 - http://www.opengl-tutorial.org/, for their simple bmp loader.

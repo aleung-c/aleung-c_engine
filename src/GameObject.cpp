@@ -94,8 +94,6 @@ void		GameObject::initValues()
 	BoundingBoxCenter = glm::vec3(0.0, 0.0, 0.0);
 }
 
-
-
 GameObject::~GameObject()
 {
 
@@ -345,9 +343,13 @@ t_bmp_texture		*GameObject::GetTexture()
 **	Make sure the new texture is the same size and is identically mapped
 **	as the previous texture.
 **	Otherwise the behavior is undefined.
+**
 **	Note that this does NOT free the old texture pointer.
-**	Use LoadNewTexture(std::string path)
-**	or ReplaceTexture(t_bmp_texture *newTexture) for this.
+**	In some cases, you will have leaks using this.
+**	You may want to use ClearTexture() before using this,
+**	or only use this on untextured objects.
+**	you should also look at LoadNewTexture(std::string path)
+**	or ReplaceTexture(t_bmp_texture *newTexture).
 */
 
 int			GameObject::SwapTexture(t_bmp_texture *newTexture)
@@ -395,3 +397,17 @@ int			GameObject::ReplaceTexture(t_bmp_texture *newTexture)
 	return (0);
 }
 
+/*
+**	Delete the current texture on the object, freeing the pointer as it should be.
+*/
+
+void		GameObject::ClearTexture()
+{
+	if (HasTexture == true)
+	{
+		glDeleteTextures(1, &_ObjTextureID);
+		free(_objTexture->data);
+		free(_objTexture);
+		HasTexture = false;
+	}
+}

@@ -28,7 +28,7 @@ void		GameEngineController::loadMatrices()
 	// Project matrices init;
 	CameraNear = 0.1;
 	CameraFar = 100.0;
-	CameraFov = 90.0;
+	CameraFov = 45.0;
 	CameraAspect = 1.77; // 4/3, 16/9, etc 1 = 4/4
 	MatPerspectiveProjection = glm::perspective(CameraFov, CameraAspect, CameraNear, CameraFar);
 
@@ -61,7 +61,7 @@ void		GameEngineController::applyMatricesToObject(GameObject *Object)
 	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.y), glm::vec3(0.0, 1.0, 0.0));
 	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.z), glm::vec3(0.0, 0.0, 1.0));
 	// remove offset for recentering.
-	MatModel = glm::translate(MatModel, -Object->BoundingBoxCenter);
+	MatModel = glm::translate(MatModel, -Object->BoundingBoxCenter);	
 
 	// Final MVP matrice mergin.
 	MatMVP = MatPerspectiveProjection * MatView * MatModel;
