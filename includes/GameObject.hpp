@@ -20,6 +20,10 @@ class GameObject : public EngineObject
 		glm::vec3						BoundingBoxMax;
 		glm::vec3						BoundingBoxCenter;
 
+		float							BoundingBoxWidth;
+		float							BoundingBoxHeight;
+		float							BoundingBoxDepth;
+
 		// GameObject's public methods.
 
 		// Accessors

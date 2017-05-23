@@ -61,10 +61,22 @@ void		GameEngineController::applyMatricesToObject(GameObject *Object)
 	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.y), glm::vec3(0.0, 1.0, 0.0));
 	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.z), glm::vec3(0.0, 0.0, 1.0));
 	// remove offset for recentering.
-	MatModel = glm::translate(MatModel, -Object->BoundingBoxCenter);	
+	MatModel = glm::translate(MatModel, -Object->BoundingBoxCenter);
 
-	// Final MVP matrice mergin.
-	MatMVP = MatPerspectiveProjection * MatView * MatModel;
+	// // Separated matrice version, same end;
+		// MatModelTranslation = glm::translate(glm::mat4(), Object->Position);
+		// MatModelRecenter = glm::translate(glm::mat4(), Object->BoundingBoxCenter);
+		// MatModelRecenterInverted = glm::translate(glm::mat4(), -Object->BoundingBoxCenter);
+		// MatModelRotation = glm::rotate(glm::mat4(), glm::radians(Object->Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+		// MatModelRotation = glm::rotate(MatModelRotation, glm::radians(Object->Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+		// MatModelRotation = glm::rotate(MatModelRotation, glm::radians(Object->Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+		// MatModelScaling = glm::scale(glm::mat4(), Object->Scale);
+		// MatModelIdentity = glm::mat4(1.0);
+
+		// MatModel = MatModelTranslation * MatModelScaling * MatModelRecenter * MatModelRotation * MatModelRecenterInverted * MatModelIdentity;
+
+	// Final MVP matrice merging.
+	MatMVP = MatPerspectiveProjection * MatView * MatModel;	
 
 	// Send it to shader.
 	GLint uniform_mat = glGetUniformLocation(MainShaderProgramme, "mvp_matrix");

@@ -58,6 +58,9 @@ GameObject::GameObject(std::string objName, std::string path)
 	BoundingBoxCenter.y = ((BoundingBoxMin.y + BoundingBoxMax.y) / 2.0);
 	BoundingBoxCenter.z = ((BoundingBoxMin.z + BoundingBoxMax.z) / 2.0);
 
+	BoundingBoxWidth = BoundingBoxMax.x - BoundingBoxMin.x;
+	BoundingBoxHeight = BoundingBoxMax.y - BoundingBoxMin.y;
+	BoundingBoxDepth = BoundingBoxMax.z - BoundingBoxMin.z;
 
 	// // ----- PRINT Bounding box
 	// std::cout << "min = " << BoundingBoxMin.x << "x "

@@ -53,6 +53,7 @@ class	GameEngineController
 		glm::mat4							MatModelIdentity;
 		glm::mat4							MatModelTranslation;
 		glm::mat4							MatModelRecenter;
+		glm::mat4							MatModelRecenterInverted;
 		glm::mat4							MatModelRotation;
 		glm::mat4							MatModelScaling;
 
