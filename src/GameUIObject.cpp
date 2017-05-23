@@ -12,9 +12,10 @@ GameUIObject::GameUIObject(std::string name, std::string imgPath)
 {
 	Name = name;
 	TexturePath = imgPath;
-	InitValues();
-	SetBuffers();
-	LoadTexture();
+	_objTexture = NULL;
+	initValues();
+	setBuffers();
+	loadTexture();
 
 	// Add this object to the engine's list of objects.
 	GameEngineController::Instance().GameUIObjectList.push_back(this);
@@ -23,19 +24,20 @@ GameUIObject::GameUIObject(std::string name, std::string imgPath)
 GameUIObject::GameUIObject(std::string name)
 {
 	Name = name;
-	InitValues();
-	HasTexture = false;
+	initValues();
+	_hasTexture = false;
+	_objTexture = NULL;
 	// Add this object to the engine's list of objects.
 	GameEngineController::Instance().GameUIObjectList.push_back(this);
 }
 
-void		GameUIObject::InitValues()
+void		GameUIObject::initValues()
 {
 	Position = glm::vec3(0.0, 0.0, 0.0);
-	Scale = 1.0;
+	ScaleValue = 1.0;
 }
 
-void		GameUIObject::SetBuffers()
+void		GameUIObject::setBuffers()
 {
 	glGenVertexArrays(1, &_vao);
 	glBindVertexArray(_vao);
@@ -47,53 +49,27 @@ void		GameUIObject::SetBuffers()
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
 }
 
-void		GameUIObject::LoadTexture()
+void		GameUIObject::loadTexture()
 {
-	if ((GameEngineController::LoadTextureFile(&_objTexture, TexturePath)) == -1)
+	_objTexture = (t_bmp_texture *)malloc(sizeof(t_bmp_texture));
+	if ((GameEngineController::LoadTextureFile(_objTexture, TexturePath)) == -1)
 	{
-		HasTexture = false;
+		_hasTexture = false;
+		free(_objTexture);
+		_objTexture = NULL;
 		return ;
 	}
-	HasTexture = true;
+	_hasTexture = true;
 	glGenTextures(1, &_objTextureID);
 
 	// // Generate texture
-	// 	GLuint	texture;
-	// 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, _objTextureID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-		_objTexture.width,
-		_objTexture.height,
-		0, GL_BGRA, GL_UNSIGNED_BYTE, _objTexture.data);
+		_objTexture->width,
+		_objTexture->height,
+		0, GL_BGRA, GL_UNSIGNED_BYTE, _objTexture->data);
 
 	// // Set texture options
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-}
-
-GLuint	GameUIObject::GetVao()
-{
-	return (_vao);
-}
-
-GLuint	GameUIObject::GetVbo()
-{
-	return (_vbo);
-}
-
-t_bmp_texture		&GameUIObject::GetTexture()
-{
-	return (_objTexture);
-}
-
-GLuint				GameUIObject::GetTextureID()
-{
-	return (_objTextureID);
 }

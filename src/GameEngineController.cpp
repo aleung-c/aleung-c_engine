@@ -187,14 +187,22 @@ int		GameEngineController::initOpenGL()
 
 void	GameEngineController::Draw()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (EngineInitialized)
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	draw3DModels();
-	drawUIObjects();
-	drawTextObjects();
+		draw3DModels();
+		drawUIObjects();
+		drawTextObjects();
 
-	// display on screen.
-	glfwSwapBuffers(Window);
+		// display on screen.
+		glfwSwapBuffers(Window);
+	}
+	else
+	{
+		std::cout << "Error: Engine not initialized! Use InitEngine() first." << std::endl;
+		exit(-1);
+	}
 }
 
 /*

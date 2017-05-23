@@ -63,6 +63,17 @@
 #include FT_FREETYPE_H
 
 /*
+**	Objects type handled by the engine.
+*/
+
+enum EngineObjectType
+{
+	GAMEOBJECT,
+	GAMEUIOBJECT,
+	GAMETEXTOBJECT
+};
+
+/*
 **	BMP helper struct
 */
 
@@ -94,11 +105,13 @@ struct Character {
 **	Class forward declarations
 */
 
+class				EngineObject; // mother class to engine's objects.
 class				GameObject;
 class				GameTextObject;
 class				GameUIObject;
 class				GameEngineController;
 
+# include "EngineObject.hpp"
 # include "GameObject.hpp"
 # include "GameTextObject.hpp"
 # include "GameUIObject.hpp"

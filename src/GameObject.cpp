@@ -18,7 +18,7 @@
 GameObject::GameObject(std::string objName)
 {
 	HasModel = false;
-	HasTexture = false;
+	_hasTexture = false;
 	_objTexture = NULL;
 	ObjPath = "";
 	Name = objName;
@@ -47,7 +47,7 @@ GameObject::GameObject(std::string objName, std::string path)
 	Name = objName;
 	ObjPath = path;
 	HasModel = true;
-	HasTexture = false;
+	_hasTexture = false;
 	_objTexture = NULL;
 	// set initial values to zero.
 	initValues();
@@ -209,14 +209,14 @@ void		GameObject::loadTexture()
 	_objTexture = (t_bmp_texture *)malloc(sizeof(t_bmp_texture));
 	if ((GameEngineController::LoadTextureFile(_objTexture, texPath)) == -1)
 	{
-		HasTexture = false;
+		_hasTexture = false;
 		free(_objTexture);
 		_objTexture = NULL;
 		return ;
 	}
 	// the loaded texture is now in this->_objTexture
-	HasTexture = true;
-	glGenTextures(1, &_ObjTextureID);
+	_hasTexture = true;
+	glGenTextures(1, &_objTextureID);
 }
 
 /*
@@ -231,35 +231,30 @@ void		GameObject::loadTexture()
 
 void		GameObject::LoadNewTexture(std::string path)
 {
-	if (HasTexture == true)
+	if (_hasTexture == true)
 	{
-		glDeleteTextures(1, &_ObjTextureID);
+		glDeleteTextures(1, &_objTextureID);
 		free(_objTexture->data);
 		free(_objTexture);
-		HasTexture = false;
+		_hasTexture = false;
+	}
+	if (!_objTexture)
+	{
+		_objTexture = (t_bmp_texture *)malloc(sizeof(t_bmp_texture));
 	}
 	if ((GameEngineController::LoadTextureFile(_objTexture, path)) == -1)
 	{
 		return ;
 	}
 	// the loaded texture is now in this->_objTexture
-	HasTexture = true;
-	glGenTextures(1, &_ObjTextureID);
+	_hasTexture = true;
+	glGenTextures(1, &_objTextureID);
 }
 
 
 // --------------------------------------------------------------------	//
 //	GameObject's accessors												//
 // --------------------------------------------------------------------	//
-
-/*
-**	Returns the object's vertex array object.
-*/
-
-GLuint		GameObject::GetVao()
-{
-	return (_vao);
-}
 
 /*
 **	Returns the object's number of vertex for each triangle.
@@ -290,15 +285,6 @@ GLuint		GameObject::GetFvbo()
 }
 
 /*
-**	Returns the object's vertex buffer object.
-*/
-
-GLuint		GameObject::GetVbo()
-{
-	return (_vbo);
-}
-
-/*
 **	Returns the object's normal buffer object.
 */
 
@@ -315,99 +301,4 @@ GLuint		GameObject::GetNbo()
 GLuint		GameObject::GetFubo()
 {
 	return (_fubo);
-}
-
-/*
-**	Returns the object's texture buffer id.
-*/
-
-GLuint		GameObject::GetTextureID()
-{
-	return (_ObjTextureID);
-}
-
-/*
-**	Returns the object's bmp texture object.
-*/
-
-t_bmp_texture		*GameObject::GetTexture()
-{
-	return (_objTexture);
-}
-
-
-
-/*
-**	Set the object's bmp texture object. Use this to quickly switch between
-**	loaded textures during runtime.
-**	Make sure the new texture is the same size and is identically mapped
-**	as the previous texture.
-**	Otherwise the behavior is undefined.
-**
-**	Note that this does NOT free the old texture pointer.
-**	In some cases, you will have leaks using this.
-**	You may want to use ClearTexture() before using this,
-**	or only use this on untextured objects.
-**	you should also look at LoadNewTexture(std::string path)
-**	or ReplaceTexture(t_bmp_texture *newTexture).
-*/
-
-int			GameObject::SwapTexture(t_bmp_texture *newTexture)
-{
-	if (HasTexture == true)
-	{
-		glDeleteTextures(1, &_ObjTextureID);
-	}
-	if (newTexture)
-	{
-		this->_objTexture = newTexture;
-		glGenTextures(1, &_ObjTextureID);
-	}
-	else
-	{
-		HasTexture = false;
-		return (-1);
-	}
-	return (0);
-}
-
-/*
-**	Changes the t_bmp_texture by the new one, and delete and free the previous texture.
-*/
-
-int			GameObject::ReplaceTexture(t_bmp_texture *newTexture)
-{
-	if (HasTexture == true)
-	{
-		glDeleteTextures(1, &_ObjTextureID);
-		free(_objTexture->data);
-		free(_objTexture);
-	}
-	if (newTexture)
-	{
-		this->_objTexture = newTexture;
-		glGenTextures(1, &_ObjTextureID);
-	}
-	else
-	{
-		HasTexture = false;
-		this->_objTexture = NULL;
-		return (-1);
-	}
-	return (0);
-}
-
-/*
-**	Delete the current texture on the object, freeing the pointer as it should be.
-*/
-
-void		GameObject::ClearTexture()
-{
-	if (HasTexture == true)
-	{
-		glDeleteTextures(1, &_ObjTextureID);
-		free(_objTexture->data);
-		free(_objTexture);
-		HasTexture = false;
-	}
 }

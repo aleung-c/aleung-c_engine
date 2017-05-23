@@ -14,7 +14,7 @@
 void		GameEngineController::render3DGameObject(GameObject	*obj)
 {
 	// texture loading.
-	if (obj->HasTexture == true)
+	if (obj->HasTexture() == true)
 	{
 		loadObjectTexture(obj);
 	}
@@ -65,8 +65,8 @@ void	GameEngineController::renderGameUIObject(GameUIObject *obj)
 	xpos = obj->Position.x;
 	ypos = obj->Position.y;
 
-	w = obj->GetTexture().width * obj->Scale;
-	h = obj->GetTexture().height * obj->Scale;
+	w = obj->GetTexture()->width * obj->ScaleValue;
+	h = obj->GetTexture()->height * obj->ScaleValue;
 	// Creates two triangles forming a quad.
 	GLfloat vertices[6][4] = {
 		{ xpos,     ypos + h,   0.0, 0.0 },
@@ -111,11 +111,11 @@ void	GameEngineController::renderGameTextObject(GameTextObject *obj)
 	{
 		ch = Characters[*c]; // take the struct in the map.
 
-		xpos = tmp_x + ch.Bearing.x * obj->Scale;
-		ypos = tmp_y - (ch.Size.y - ch.Bearing.y) * obj->Scale;
+		xpos = tmp_x + ch.Bearing.x * obj->ScaleValue;
+		ypos = tmp_y - (ch.Size.y - ch.Bearing.y) * obj->ScaleValue;
 
-		w = ch.Size.x * obj->Scale;
-		h = ch.Size.y * obj->Scale;
+		w = ch.Size.x * obj->ScaleValue;
+		h = ch.Size.y * obj->ScaleValue;
 		// Creates two triangles forming a quad.
 		GLfloat vertices[6][4] = {
 			{ xpos,     ypos + h,   0.0, 0.0 },
@@ -135,7 +135,7 @@ void	GameEngineController::renderGameTextObject(GameTextObject *obj)
 		// then draw
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		// Advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		tmp_x += (ch.Advance >> 6) * obj->Scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
+		tmp_x += (ch.Advance >> 6) * obj->ScaleValue; // Bitshift by 6 to get value in pixels (2^6 = 64)
 	}
 	glDisableVertexAttribArray(0);
 }

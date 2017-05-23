@@ -14,6 +14,7 @@ SRC = ./src/GameEngineController.cpp \
 ./src/GameEngineController_matrices.cpp \
 ./src/GameEngineController_camera.cpp \
 ./src/GameEngineController_rendering.cpp \
+./src/EngineObject.cpp \
 ./src/GameObject.cpp \
 ./src/GameObject_Parsing.cpp \
 ./src/GameUIObject.cpp \
