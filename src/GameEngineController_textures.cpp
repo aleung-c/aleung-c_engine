@@ -22,8 +22,10 @@ void	GameEngineController::loadObjectTexture(GameObject *Object)
 	glBindTexture(GL_TEXTURE_2D, Object->GetTextureID());
 
 	// Give the image to OpenGL
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Object->GetTexture()->width, Object->GetTexture()->height, 0,
-		GL_BGR, GL_UNSIGNED_BYTE, Object->GetTexture()->data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+		Object->GetTexture()->width,
+		Object->GetTexture()->height,
+		0, GL_BGRA, GL_UNSIGNED_BYTE, Object->GetTexture()->data);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
