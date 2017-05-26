@@ -64,8 +64,8 @@ void		GameObject::getObjValues(FILE *file)
 
 				if (matches != 9)
 				{
-					printf("File can't be read by our simple parser :"
-						"Try exporting with other options\n");
+					printf("Cant read file: OBJ parser error\n");
+					// std::cout << file << std::endl;
 					return ;
 				}
 				_objVertexIndices.push_back(vertexIndex[0]);
