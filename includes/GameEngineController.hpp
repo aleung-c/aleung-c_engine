@@ -19,6 +19,8 @@ class	GameEngineController
 
 		bool								DebugMode;
 
+		EngineSettings						Settings;
+
 		int									WindowWidth;
 		int									WindowHeight;
 		std::string							WindowName;
@@ -47,6 +49,7 @@ class	GameEngineController
 
 		GLuint								MainShaderProgramme;
 		GLuint								OrthoShaderProgramme;
+		GLuint								MorphTargetProgramme;
 
 		// ------ Matrix handling ------
 		// Model
@@ -122,6 +125,7 @@ class	GameEngineController
 
 		// ----- Object rendering.
 		void								render3DGameObject(GameObject *obj);
+		void								renderMorphAnimation(GameObject *obj);
 		void								renderGameUIObject(GameUIObject *obj);
 		void								renderGameTextObject(GameTextObject *obj);
 

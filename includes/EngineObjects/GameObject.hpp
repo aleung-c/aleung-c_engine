@@ -1,7 +1,7 @@
 #ifndef GAMEOBJECT_HPP
 # define GAMEOBJECT_HPP
 
-#include "aleung-c_engine.hpp"
+#include "../aleung-c_engine.hpp"
 
 class GameObject : public EngineObject
 {
@@ -16,16 +16,12 @@ class GameObject : public EngineObject
 		std::string						ObjPath;
 		bool							HasModel;
 
-		glm::vec3						BoundingBoxMin;
-		glm::vec3						BoundingBoxMax;
-		glm::vec3						BoundingBoxCenter;
+		BoundingBoxComponent			BoundingBox;
 
-		float							BoundingBoxWidth;
-		float							BoundingBoxHeight;
-		float							BoundingBoxDepth;
+		// Morph target animation component.
+		MorphTargetAnimation			MorphAnimation;
 
 		// GameObject's public methods.
-
 		// Accessors
 		int								GetNbFaceVertices();
 		int								GetNbFaces();

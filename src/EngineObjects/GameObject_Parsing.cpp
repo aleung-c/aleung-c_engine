@@ -1,4 +1,4 @@
-#include "../includes/aleung-c_engine.hpp"
+#include "../../includes/aleung-c_engine.hpp"
 
 /*
 ** The loader for our obj files.
@@ -24,20 +24,20 @@ void		GameObject::getObjValues(FILE *file)
 				vertex.w = 1.0;
 				// ----- Set Bounding box values;
 				// Set x
-				if (vertex.x >= BoundingBoxMax.x)
-					BoundingBoxMax.x = vertex.x;
-				if (vertex.x <= BoundingBoxMin.x)
-					BoundingBoxMin.x = vertex.x;
+				if (vertex.x >= BoundingBox.Max.x)
+					BoundingBox.Max.x = vertex.x;
+				if (vertex.x <= BoundingBox.Min.x)
+					BoundingBox.Min.x = vertex.x;
 				// Set y
-				if (vertex.y >= BoundingBoxMax.y)
-					BoundingBoxMax.y = vertex.y;
-				if (vertex.y <= BoundingBoxMin.y)
-					BoundingBoxMin.y = vertex.y;
+				if (vertex.y >= BoundingBox.Max.y)
+					BoundingBox.Max.y = vertex.y;
+				if (vertex.y <= BoundingBox.Min.y)
+					BoundingBox.Min.y = vertex.y;
 				// Set z
-				if (vertex.z >= BoundingBoxMax.z)
-					BoundingBoxMax.z = vertex.z;
-				if (vertex.z <= BoundingBoxMin.z)
-					BoundingBoxMin.z = vertex.z;
+				if (vertex.z >= BoundingBox.Max.z)
+					BoundingBox.Max.z = vertex.z;
+				if (vertex.z <= BoundingBox.Min.z)
+					BoundingBox.Min.z = vertex.z;
 				// ----- end set bounding box min max.
 				_objVertices.push_back(vertex);
 			}

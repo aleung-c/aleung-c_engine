@@ -1,4 +1,4 @@
-#include "../includes/aleung-c_engine.hpp"
+#include "../../includes/aleung-c_engine.hpp"
 
 // --------------------------------------------------------------------------------	//
 //																					//
@@ -31,7 +31,9 @@ GameEngineController::GameEngineController() :
 	DebugMode(false),
 	EngineInitialized(false)
 {
-
+	// Set engine default Settings;
+	Settings.TextureMipMapValue = TEXTUREMIPMAP_DEFAULT;
+	Settings.AntiAliasingValue = ANTIALIASING_DEFAULT;
 }
 
 // default destructor
@@ -44,6 +46,12 @@ GameEngineController& GameEngineController::Instance()
 {
 	return m_instance;
 }
+
+// --------------------------------------------------------------------	//
+//																		//
+//	Engine inits														//
+//																		//
+// --------------------------------------------------------------------	//
 
 /*
 **	This method MUST be called through the game code, as it will set the 
@@ -145,6 +153,10 @@ int		GameEngineController::initGLFW()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	// ----- AntiAliasing
+	glfwWindowHint(GLFW_SAMPLES, Settings.AntiAliasingValue);
+
 	Window = glfwCreateWindow(WindowWidth, WindowHeight, WindowName.c_str(), NULL, NULL);
 	if (!Window)
 	{
@@ -177,6 +189,9 @@ int		GameEngineController::initOpenGL()
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// for antialiasing.
+	glEnable(GL_MULTISAMPLE);
 
 	// glEnable(GL_ALPHA_TEST);
 
@@ -226,10 +241,10 @@ void	GameEngineController::Draw()
 
 void	GameEngineController::draw3DModels()
 {
-	glUseProgram(MainShaderProgramme);
+	// glUseProgram(MainShaderProgramme);
 
 	// Reset Camera VIEW matrix for camera movement.
-	MatView = glm::lookAt(MainCamera->Position, CameraLookAt, glm::vec3(0.0, 2.0, 0.0));
+	MatView = glm::lookAt(MainCamera->Transform.Position, CameraLookAt, glm::vec3(0.0, 2.0, 0.0));
 
 	// draw 3d objects
 	// run through each object to set their matrices and textures and draw them on screen.
@@ -237,7 +252,17 @@ void	GameEngineController::draw3DModels()
 		it != GameObjectList.end();
 		it++)
 	{
-		render3DGameObject(*it);
+		
+		if ((*it)->MorphAnimation.IsAnimated() == true)
+		{
+			glUseProgram(MorphTargetProgramme);
+			renderMorphAnimation(*it);
+		}
+		else
+		{
+			glUseProgram(MainShaderProgramme);
+			render3DGameObject(*it);
+		}
 	}
 }
 

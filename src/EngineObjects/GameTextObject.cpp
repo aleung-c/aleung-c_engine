@@ -1,4 +1,4 @@
-#include "../includes/aleung-c_engine.hpp"
+#include "../../includes/aleung-c_engine.hpp"
 
 // --------------------------------------------------------------------	//
 //																		//
@@ -13,16 +13,15 @@ GameTextObject::GameTextObject(std::string name, std::string text)
 	Text = text;
 	InitValues();
 	SetBuffers();
-	_hasTexture = false;
 	// Add this object to the engine's list of objects.
 	GameEngineController::Instance().GameTextObjectList.push_back(this);
 }
 
 void		GameTextObject::InitValues()
 {
-	Position = glm::vec3(0.0, 0.0, 0.0);
+	Transform.Position = glm::vec3(0.0, 0.0, 0.0);
 	Color = glm::vec3(1.0, 1.0, 1.0);
-	ScaleValue = 1.0;
+	Transform.ScaleValue = 1.0;
 }
 
 void		GameTextObject::SetBuffers()

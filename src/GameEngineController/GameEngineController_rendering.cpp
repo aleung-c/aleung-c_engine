@@ -1,4 +1,4 @@
-#include "../includes/aleung-c_engine.hpp"
+#include "../../includes/aleung-c_engine.hpp"
 
 // --------------------------------------------------------------------	//
 //																		//
@@ -14,7 +14,7 @@
 void		GameEngineController::render3DGameObject(GameObject	*obj)
 {
 	// texture loading.
-	if (obj->HasTexture() == true)
+	if (obj->Texture.HasTexture() == true)
 	{
 		loadObjectTexture(obj);
 	}
@@ -49,6 +49,48 @@ void		GameEngineController::render3DGameObject(GameObject	*obj)
 	}
 }
 
+void		GameEngineController::renderMorphAnimation(GameObject	*obj)
+{
+	// texture loading.
+	if (obj->Texture.HasTexture() == true)
+	{
+		loadObjectTexture(obj);
+	}
+	else
+		glUniform1i(glGetUniformLocation(MorphTargetProgramme, "has_texture"), GL_FALSE);
+	// opengl buffer loading.
+	if (obj->HasModel == true)
+	{
+		applyMatricesToObject(obj);
+		glUniform1f(glGetUniformLocation(MorphTargetProgramme, "time"),
+			obj->MorphAnimation.GetCurTime());
+
+		// ------ load the uvs for the object - LOCATION = 1
+		glBindBuffer(GL_ARRAY_BUFFER, obj->GetFubo());
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+		glEnableVertexAttribArray(1);
+
+		// ------ load vertices for morph target - LOCATION = 2
+		glBindBuffer(GL_ARRAY_BUFFER, obj->MorphAnimation.NextFrame->GetFvbo());
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+		glEnableVertexAttribArray(2);
+
+		// ------ load vertex and draw them - LOCATION = 0
+		// ----------- To display triangles from faces vertex
+		glBindBuffer(GL_ARRAY_BUFFER, obj->MorphAnimation.CurFrame->GetFvbo());
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+		glEnableVertexAttribArray(0);
+		glDrawArrays(GL_TRIANGLES, 0, obj->GetNbFaceVertices());
+
+
+		// ----- disable all after draw;
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
+		obj->MorphAnimation.Update();
+	}
+}
+
 // --------------------------------------------------------------------	//
 //																		//
 //	Rendering UI object													//
@@ -62,11 +104,11 @@ void		GameEngineController::render3DGameObject(GameObject	*obj)
 void	GameEngineController::renderGameUIObject(GameUIObject *obj)
 {
 	glBindVertexArray(obj->GetVao());
-	xpos = obj->Position.x;
-	ypos = obj->Position.y;
+	xpos = obj->Transform.Position.x;
+	ypos = obj->Transform.Position.y;
 
-	w = obj->GetTexture()->width * obj->ScaleValue;
-	h = obj->GetTexture()->height * obj->ScaleValue;
+	w = obj->Texture.GetTexture()->width * obj->Transform.ScaleValue;
+	h = obj->Texture.GetTexture()->height * obj->Transform.ScaleValue;
 	// Creates two triangles forming a quad.
 	GLfloat vertices[6][4] = {
 		{ xpos,     ypos + h,   0.0, 0.0 },
@@ -78,7 +120,7 @@ void	GameEngineController::renderGameUIObject(GameUIObject *obj)
 	};
 	// bind character texture, then put the vertices in the object's buffer.
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, obj->GetTextureID());
+	glBindTexture(GL_TEXTURE_2D, obj->Texture.GetTextureID());
 	glBindBuffer(GL_ARRAY_BUFFER, obj->GetVbo());
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -102,8 +144,8 @@ void	GameEngineController::renderGameTextObject(GameTextObject *obj)
 	glUniform3f(glGetUniformLocation(OrthoShaderProgramme, "textColor"),
 		obj->Color.x, obj->Color.y, obj->Color.z);
 	glBindVertexArray(obj->GetVao());
-	tmp_x = obj->Position.x;
-	tmp_y = obj->Position.y;
+	tmp_x = obj->Transform.Position.x;
+	tmp_y = obj->Transform.Position.y;
 	// Iterate through all characters of the string.
 	for (std::string::const_iterator c = obj->Text.begin();
 		c != obj->Text.end();
@@ -111,11 +153,11 @@ void	GameEngineController::renderGameTextObject(GameTextObject *obj)
 	{
 		ch = Characters[*c]; // take the struct in the map.
 
-		xpos = tmp_x + ch.Bearing.x * obj->ScaleValue;
-		ypos = tmp_y - (ch.Size.y - ch.Bearing.y) * obj->ScaleValue;
+		xpos = tmp_x + ch.Bearing.x * obj->Transform.ScaleValue;
+		ypos = tmp_y - (ch.Size.y - ch.Bearing.y) * obj->Transform.ScaleValue;
 
-		w = ch.Size.x * obj->ScaleValue;
-		h = ch.Size.y * obj->ScaleValue;
+		w = ch.Size.x * obj->Transform.ScaleValue;
+		h = ch.Size.y * obj->Transform.ScaleValue;
 		// Creates two triangles forming a quad.
 		GLfloat vertices[6][4] = {
 			{ xpos,     ypos + h,   0.0, 0.0 },
@@ -135,7 +177,7 @@ void	GameEngineController::renderGameTextObject(GameTextObject *obj)
 		// then draw
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		// Advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		tmp_x += (ch.Advance >> 6) * obj->ScaleValue; // Bitshift by 6 to get value in pixels (2^6 = 64)
+		tmp_x += (ch.Advance >> 6) * obj->Transform.ScaleValue; // Bitshift by 6 to get value in pixels (2^6 = 64)
 	}
 	glDisableVertexAttribArray(0);
 }

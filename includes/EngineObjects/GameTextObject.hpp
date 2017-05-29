@@ -1,7 +1,7 @@
 #ifndef GAMETEXTOBJECT_HPP
 # define GAMETEXTOBJECT_HPP
 
-#include "aleung-c_engine.hpp"
+#include "../aleung-c_engine.hpp"
 
 class GameTextObject : public EngineObject
 {

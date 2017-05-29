@@ -1,28 +1,17 @@
-#include "../includes/aleung-c_engine.hpp"
+#include "../../includes/aleung-c_engine.hpp"
 
-/*
-**	Returns the object's vertex array object.
-*/
 
-GLuint		EngineObject::GetVao()
+TextureComponent::TextureComponent()
 {
-	return (_vao);
-}
-
-/*
-**	Returns the object's vertex buffer object.
-*/
-
-GLuint		EngineObject::GetVbo()
-{
-	return (_vbo);
+	_objTexture = NULL;
+	_hasTexture = false;
 }
 
 /*
 **	Returns the object's texture buffer id.
 */
 
-GLuint		EngineObject::GetTextureID()
+GLuint		TextureComponent::GetTextureID()
 {
 	return (_objTextureID);
 }
@@ -31,41 +20,19 @@ GLuint		EngineObject::GetTextureID()
 **	Returns the object's bmp texture object.
 */
 
-t_bmp_texture		*EngineObject::GetTexture()
+t_bmp_texture		*TextureComponent::GetTexture()
 {
 	return (_objTexture);
 }
 
-bool				EngineObject::HasTexture()
+bool				TextureComponent::HasTexture()
 {
 	return (_hasTexture);
 }
 
-/*
-**	Protected -
-**	This method loads the texture at the construction of the object.
-*/
-
-void		EngineObject::loadTexture(std::string texPath)
+void				TextureComponent::SetTextureFlag(bool flag)
 {
-	// TODO: check if texture path is present in texture manager.
-	_objTexture = GameEngineController::Instance().TextureManager.GetTexture(texPath);
-	if (!_objTexture)
-	{
-		_objTexture = (t_bmp_texture *)malloc(sizeof(t_bmp_texture));
-		if ((GameEngineController::LoadTextureFile(_objTexture, texPath)) == -1)
-		{
-			_hasTexture = false;
-			free(_objTexture);
-			_objTexture = NULL;
-			return ;
-		}
-	}
-	// the loaded texture is now in this->_objTexture
-	_objTexture->texture_path = texPath;
-	GameEngineController::Instance().TextureManager.AddTexture(_objTexture);
-	_hasTexture = true;
-	glGenTextures(1, &_objTextureID);
+	_hasTexture = flag;
 }
 
 /*
@@ -79,24 +46,25 @@ void		EngineObject::loadTexture(std::string texPath)
 **	bmp textures objects in your game code.
 */
 
-void		EngineObject::LoadNewTexture(std::string path)
+void		TextureComponent::Load(std::string path)
 {
-	if (_hasTexture == true)
-	{
-		glDeleteTextures(1, &_objTextureID);
-		free(_objTexture->data);
-		free(_objTexture);
-		_hasTexture = false;
-	}
+	// Checking if the texture is already loaded in the texture manager.
+	_objTexture = GameEngineController::Instance().TextureManager.GetTexture(path);
 	if (!_objTexture)
 	{
+		// if not, load it now
 		_objTexture = (t_bmp_texture *)malloc(sizeof(t_bmp_texture));
-	}
-	if ((GameEngineController::LoadTextureFile(_objTexture, path)) == -1)
-	{
-		return ;
+		if ((GameEngineController::LoadTextureFile(_objTexture, path)) == -1)
+		{
+			_hasTexture = false;
+			free(_objTexture);
+			_objTexture = NULL;
+			return ;
+		}
 	}
 	// the loaded texture is now in this->_objTexture
+	_objTexture->texture_path = path;
+	GameEngineController::Instance().TextureManager.AddTexture(_objTexture);
 	_hasTexture = true;
 	glGenTextures(1, &_objTextureID);
 }
@@ -116,7 +84,7 @@ void		EngineObject::LoadNewTexture(std::string path)
 **	or ReplaceTexture(t_bmp_texture *newTexture).
 */
 
-int			EngineObject::SwapTexture(t_bmp_texture *newTexture)
+int			TextureComponent::Swap(t_bmp_texture *newTexture)
 {
 	if (_hasTexture == true)
 	{
@@ -140,7 +108,7 @@ int			EngineObject::SwapTexture(t_bmp_texture *newTexture)
 **	Changes the t_bmp_texture by the new one, and delete and free the previous texture.
 */
 
-int			EngineObject::ReplaceTexture(t_bmp_texture *newTexture)
+int			TextureComponent::Replace(t_bmp_texture *newTexture)
 {
 	if (_hasTexture == true)
 	{
@@ -167,7 +135,7 @@ int			EngineObject::ReplaceTexture(t_bmp_texture *newTexture)
 **	Delete the current texture on the object, freeing the pointer as it should be.
 */
 
-void		EngineObject::ClearTexture()
+void		TextureComponent::Clear()
 {
 	if (_hasTexture == true)
 	{

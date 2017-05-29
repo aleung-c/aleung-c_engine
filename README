@@ -120,6 +120,10 @@ Know that as you code, you always have access to the instance of the engine with
      GameEngineController::Instance()
 
 It is a singleton, accessible wherever you need it.
+Also, there is a Settings Component on the engine, where you can
+set all engine related variables, such as the antialiasing value:
+
+    GameEngine.Settings.AntiAliasingValue = 4;
 
     b. Set the camera.
 
@@ -138,7 +142,7 @@ until I get motivated to make a better user set camera.
 To put an object in the world, you should just do this:
 
     GameObject *Character = new GameObject("Character", "./ressources/Model.obj");
-    Character->Position = glm::vec3(3.0, 0.0, 0.0);
+    Character->Transform.Position = glm::vec3(3.0, 0.0, 0.0);
 
 This will put the object in the engine's list of object, and draw it when 
 asked.
@@ -177,11 +181,12 @@ to load a default texture. This is useful if you have obj1.obj and in the same f
 It does an automatic texture loading.
 
 However, games may require the texture to be changed on the spot. This means we must change the texture in our objects.
-Inside the GameObject, or any textured object, there is a t_bmp_texture struct variable. To change this, you may do as such:
+Inside the GameObject, or any textured object, there is a Texture component, allowing
+easy texture handling:
 
     GameObject *Character = new GameObject("Character", "./ressources/Model.obj");
 
-    Character->LoadNewTexture("./ressources/newTexture.bmp");
+    Character->Texture.Load("./ressources/newTexture.bmp");
 
 This way of changing the texture will parse the new file you give it. It is cool, sure, but if you call it several times,
 it will create performance problems.
@@ -195,27 +200,26 @@ There is the right way to do it if you want to stock multiple textures in some s
     GameEngineController::LoadTextureFile(new_texture_1, "./ressources/new_texture.bmp");
 
     // if the obj already has a texture
-    Character->ClearTexture();
+    Character->Texture.Clear();
  
-    Character->SwapTexture(new_texture_1);
+    Character->Texture.Swap(new_texture_1);
     ....
-    Character->SwapTexture(new_texture_2);
+    Character->Texture.Swap(new_texture_2);
 
-Know that if the character already has a texture and you swap over it, the previous texture will be a leak.
-If you want to change the texture only once and want the previous texture leaked, you can also use ReplaceTexture(t_bmp_texture *).
+Know that if the character already has a texture and you swap over it, the previous texture will be a memory leak.
+If you want to change the texture only once and want the previous texture leaked, you can also use Texture.Replace(t_bmp_texture *).
 
 All this means that there are several methods for removing/replacing/swapping textures, that should be used according to case.
-The goal here was to have all tools at hand to have either some simple texture loading, or to be able to make a pool of textures,
-swapped over during gameplay.
+The goal here was to have all tools at hand to have either some simple texture loading, or to be able to make a pool of textures, swapped over during gameplay.
 
 However, a shared pool of texture has been added to the engine. That means if you load several textures with the same path,
 the texture will be reused. This reduces the overhead and the context changing, but it may cause memory corruption problems
-when you free a texture. Be extra careful with freeing textures methods, that are ReplaceTexture(), ClearTexture(), LoadNewTexture(),
+when you free a texture. Be extra careful with freeing textures methods, that are Replace(), Clear(), Load(),
 as they may destroy other objects' texture and cause some segfault.
 
     f. Collisions.
 
-For now, the collisions must be handled gameplayside. However, every object has a bounding box that is set from the smallest vertex
+For now, the collisions must be handled gameplayside. However, every object has a BoundingBox component that is set from the smallest vertex
 to the biggest vertex. Meaning you virtually have access to a square bounding box.
 Note for thought: Ill surely turn this into a engine side collision system, with a flag system to activate/deactivate the collision
 research, as it is a performance chokepoint.

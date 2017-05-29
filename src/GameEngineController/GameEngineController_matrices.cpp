@@ -1,4 +1,4 @@
-#include "../includes/aleung-c_engine.hpp"
+#include "../../includes/aleung-c_engine.hpp"
 
 // --------------------------------------------------------------------	//
 //																		//
@@ -18,9 +18,9 @@ void		GameEngineController::loadMatrices()
 {
 	// View matrices init;
 	MainCamera = new GameObject("MainCamera");
-	MainCamera->Position = glm::vec3(0.0, 5.0, 10.0);
+	MainCamera->Transform.Position = glm::vec3(0.0, 5.0, 10.0);
 	MatView = glm::lookAt(
-		MainCamera->Position,
+		MainCamera->Transform.Position,
 		CameraLookAt, // regarde l'origine
 		glm::vec3(0.0, 2.0, 0.0)  // La tête est vers le haut (utilisez 0,-1,0 pour regarder à l'envers) 
 	);
@@ -49,28 +49,28 @@ void		GameEngineController::applyMatricesToObject(GameObject *Object)
 	MatModel = glm::mat4();
 
 	// translation
-	MatModel = glm::translate(MatModel, Object->Position);
+	MatModel = glm::translate(MatModel, Object->Transform.Position);
 
 	// scaling
-	MatModel = glm::scale(MatModel, Object->Scale);
+	MatModel = glm::scale(MatModel, Object->Transform.Scale);
 
 	// added offset for recentering.
-	MatModel = glm::translate(MatModel, Object->BoundingBoxCenter);
+	MatModel = glm::translate(MatModel, Object->BoundingBox.Center);
 	// rotation
-	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.x), glm::vec3(1.0, 0.0, 0.0));
-	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.y), glm::vec3(0.0, 1.0, 0.0));
-	MatModel = glm::rotate(MatModel, glm::radians(Object->Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+	MatModel = glm::rotate(MatModel, glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+	MatModel = glm::rotate(MatModel, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+	MatModel = glm::rotate(MatModel, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
 	// remove offset for recentering.
-	MatModel = glm::translate(MatModel, -Object->BoundingBoxCenter);
+	MatModel = glm::translate(MatModel, -Object->BoundingBox.Center);
 
 	// // Separated matrice version, same end;
-		// MatModelTranslation = glm::translate(glm::mat4(), Object->Position);
-		// MatModelRecenter = glm::translate(glm::mat4(), Object->BoundingBoxCenter);
-		// MatModelRecenterInverted = glm::translate(glm::mat4(), -Object->BoundingBoxCenter);
-		// MatModelRotation = glm::rotate(glm::mat4(), glm::radians(Object->Rotation.x), glm::vec3(1.0, 0.0, 0.0));
-		// MatModelRotation = glm::rotate(MatModelRotation, glm::radians(Object->Rotation.y), glm::vec3(0.0, 1.0, 0.0));
-		// MatModelRotation = glm::rotate(MatModelRotation, glm::radians(Object->Rotation.z), glm::vec3(0.0, 0.0, 1.0));
-		// MatModelScaling = glm::scale(glm::mat4(), Object->Scale);
+		// MatModelTranslation = glm::translate(glm::mat4(), Object->Transform.Position);
+		// MatModelRecenter = glm::translate(glm::mat4(), Object->BoundingBox.Center);
+		// MatModelRecenterInverted = glm::translate(glm::mat4(), -Object->BoundingBox.Center);
+		// MatModelRotation = glm::rotate(glm::mat4(), glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+		// MatModelRotation = glm::rotate(MatModelRotation, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+		// MatModelRotation = glm::rotate(MatModelRotation, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+		// MatModelScaling = glm::scale(glm::mat4(), Object->Transform.Scale);
 		// MatModelIdentity = glm::mat4(1.0);
 
 		// MatModel = MatModelTranslation * MatModelScaling * MatModelRecenter * MatModelRotation * MatModelRecenterInverted * MatModelIdentity;

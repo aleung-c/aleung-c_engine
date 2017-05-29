@@ -1,4 +1,4 @@
-#include "../includes/aleung-c_engine.hpp"
+#include "../../includes/aleung-c_engine.hpp"
 
 // --------------------------------------------------------------------	//
 //																		//
@@ -18,8 +18,6 @@
 GameObject::GameObject(std::string objName)
 {
 	HasModel = false;
-	_hasTexture = false;
-	_objTexture = NULL;
 	ObjPath = "";
 	Name = objName;
 	initValues();
@@ -47,57 +45,56 @@ GameObject::GameObject(std::string objName, std::string path)
 	Name = objName;
 	ObjPath = path;
 	HasModel = true;
-	_hasTexture = false;
-	_objTexture = NULL;
+	MorphAnimation.StartFrame = this;
 	// set initial values to zero.
 	initValues();
 	// Parse the obj file to scoop values.
 	getObjValues(file);
 	// set bounding box center -> object math center.
-	BoundingBoxCenter.x = ((BoundingBoxMin.x + BoundingBoxMax.x) / 2.0);
-	BoundingBoxCenter.y = ((BoundingBoxMin.y + BoundingBoxMax.y) / 2.0);
-	BoundingBoxCenter.z = ((BoundingBoxMin.z + BoundingBoxMax.z) / 2.0);
+	BoundingBox.Center.x = ((BoundingBox.Min.x + BoundingBox.Max.x) / 2.0);
+	BoundingBox.Center.y = ((BoundingBox.Min.y + BoundingBox.Max.y) / 2.0);
+	BoundingBox.Center.z = ((BoundingBox.Min.z + BoundingBox.Max.z) / 2.0);
 
-	BoundingBoxWidth = BoundingBoxMax.x - BoundingBoxMin.x;
-	BoundingBoxHeight = BoundingBoxMax.y - BoundingBoxMin.y;
-	BoundingBoxDepth = BoundingBoxMax.z - BoundingBoxMin.z;
+	BoundingBox.Width = BoundingBox.Max.x - BoundingBox.Min.x;
+	BoundingBox.Height = BoundingBox.Max.y - BoundingBox.Min.y;
+	BoundingBox.Depth = BoundingBox.Max.z - BoundingBox.Min.z;
 
 	// // ----- PRINT Bounding box
-	// std::cout << "min = " << BoundingBoxMin.x << "x "
-	// 			<< BoundingBoxMin.y << "y "
-	// 			<< BoundingBoxMin.z << "z" << std::endl;
+	// std::cout << "min = " << BoundingBox.Min.x << "x "
+	// 			<< BoundingBox.Min.y << "y "
+	// 			<< BoundingBox.Min.z << "z" << std::endl;
 
-	// std::cout << "center = " << BoundingBoxCenter.x << "x "
-	// 			<< BoundingBoxCenter.y << "y "
-	// 			<< BoundingBoxCenter.z << "z" << std::endl;
+	// std::cout << "center = " << BoundingBox.Center.x << "x "
+	// 			<< BoundingBox.Center.y << "y "
+	// 			<< BoundingBox.Center.z << "z" << std::endl;
 
-	// std::cout << "max = " << BoundingBoxMax.x << "x "
-	// 			<< BoundingBoxMax.y << "y "
-	// 			<< BoundingBoxMax.z << "z" << std::endl << std::endl;
+	// std::cout << "max = " << BoundingBox.Max.x << "x "
+	// 			<< BoundingBox.Max.y << "y "
+	// 			<< BoundingBox.Max.z << "z" << std::endl << std::endl;
 
 	// create faces from indexes.
 	createObjFaces();
 	// set opengl buffers
 	setBuffers();
-	// load texture.
+	// try to AUTO LOAD texture.
 	std::string texPath = ObjPath;
 	texPath.resize(ObjPath.size() - 4);
 	texPath.append(".bmp", 4);
-	loadTexture(texPath);
+	Texture.Load(texPath);
 	// Add this object to the engine's list of objects.
 	GameEngineController::Instance().GameObjectList.push_back(this);
 }
 
 void		GameObject::initValues()
 {
-	Position = glm::vec3(0.0, 0.0, 0.0);
+	Transform.Position = glm::vec3(0.0, 0.0, 0.0);
 	// for now, we will imagine euleur rotations.
-	Rotation = glm::vec3(0.0, 0.0, 0.0);
-	Scale = glm::vec3(1.0, 1.0, 1.0);
+	Transform.Rotation = glm::vec3(0.0, 0.0, 0.0);
+	Transform.Scale = glm::vec3(1.0, 1.0, 1.0);
 
-	BoundingBoxMin = glm::vec3(0.0, 0.0, 0.0);
-	BoundingBoxMax = glm::vec3(0.0, 0.0, 0.0);
-	BoundingBoxCenter = glm::vec3(0.0, 0.0, 0.0);
+	BoundingBox.Min = glm::vec3(0.0, 0.0, 0.0);
+	BoundingBox.Max = glm::vec3(0.0, 0.0, 0.0);
+	BoundingBox.Center = glm::vec3(0.0, 0.0, 0.0);
 }
 
 GameObject::~GameObject()

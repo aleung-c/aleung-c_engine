@@ -63,6 +63,13 @@
 #include FT_FREETYPE_H
 
 /*
+**	Engine default values
+*/
+
+#define TEXTUREMIPMAP_DEFAULT 4
+#define ANTIALIASING_DEFAULT 4
+
+/*
 **	Objects type handled by the engine.
 */
 
@@ -106,18 +113,44 @@ struct Character {
 **	Class forward declarations
 */
 
-class				EngineObject; // mother class to engine's objects.
-class				TextureManager;
+// Engine mother Object class;
+class				EngineObject;
+
+// Objects' components
+class				TransformComponent;
+class				BoundingBoxComponent;
+class				TextureComponent;
+
+
+// Main objects
 class				GameObject;
 class				GameTextObject;
 class				GameUIObject;
+
+// Main Controller
+class				TextureManager;
+class				EngineSettings;
 class				GameEngineController;
 
-# include "EngineObject.hpp"
+// file includes - order matters.
+
+# include "ObjectsComponents/TransformComponent.hpp"
+
+# include "ObjectsComponents/TextureComponent.hpp"
+
+# include "EngineObjects/EngineObject.hpp"
+
+# include "ObjectsComponents/BoundingBoxComponent.hpp"
+
+# include "ObjectsComponents/MorphTargetAnimation.hpp"
+
+# include "EngineObjects/GameObject.hpp"
+# include "EngineObjects/GameTextObject.hpp"
+# include "EngineObjects/GameUIObject.hpp"
+
 # include "TextureManager.hpp"
-# include "GameObject.hpp"
-# include "GameTextObject.hpp"
-# include "GameUIObject.hpp"
+# include "EngineSettings.hpp"
+
 # include "GameEngineController.hpp"
 
 # endif

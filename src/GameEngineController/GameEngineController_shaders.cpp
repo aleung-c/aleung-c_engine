@@ -1,4 +1,4 @@
-#include "../includes/aleung-c_engine.hpp"
+#include "../../includes/aleung-c_engine.hpp"
 
 // --------------------------------------------------------------------	//
 //																		//
@@ -56,4 +56,25 @@ void	GameEngineController::loadShaders()
 	glAttachShader(shader_programme2, vs2);
 	glLinkProgram (shader_programme2);
 	OrthoShaderProgramme = shader_programme2;
+
+	// ------------------------------------------------------------------------ //
+	//	Morph Target animation Shaders											//
+	// ------------------------------------------------------------------------ //
+
+	VertexShader_1 = GetFileContent("./aleung-c_engine/shaders/morph_target_vshader.vs");
+	FragmentShader_1 = GetFileContent("./aleung-c_engine/shaders/fshader_1.fs");
+
+	// Create shader programme
+	GLuint vs3 = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vs3, 1, (const char * const *)&VertexShader_1, NULL);
+	glCompileShader(vs3);
+	GLuint fs3 = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fs3, 1, (const char * const *)&FragmentShader_1, NULL);
+	glCompileShader(fs3);
+
+	GLuint shader_programme3 = glCreateProgram ();
+	glAttachShader(shader_programme3, fs3);
+	glAttachShader(shader_programme3, vs3);
+	glLinkProgram (shader_programme3);
+	MorphTargetProgramme = shader_programme3;
 }

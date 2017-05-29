@@ -6,20 +6,23 @@
 
 NAME = libaleung-c_engine.a
 
-SRC = ./src/GameEngineController.cpp \
-./src/GameEngineController_freetype_font.cpp \
-./src/GameEngineController_parsing.cpp \
-./src/GameEngineController_shaders.cpp \
-./src/GameEngineController_textures.cpp \
-./src/GameEngineController_matrices.cpp \
-./src/GameEngineController_camera.cpp \
-./src/GameEngineController_rendering.cpp \
-./src/EngineObject.cpp \
-./src/TextureManager.cpp \
-./src/GameObject.cpp \
-./src/GameObject_Parsing.cpp \
-./src/GameUIObject.cpp \
-./src/GameTextObject.cpp
+SRC = ./src/GameEngineController/GameEngineController.cpp \
+./src/GameEngineController/GameEngineController.cpp \
+./src/GameEngineController/GameEngineController_freetype_font.cpp \
+./src/GameEngineController/GameEngineController_parsing.cpp \
+./src/GameEngineController/GameEngineController_shaders.cpp \
+./src/GameEngineController/GameEngineController_textures.cpp \
+./src/GameEngineController/GameEngineController_matrices.cpp \
+./src/GameEngineController/GameEngineController_camera.cpp \
+./src/GameEngineController/GameEngineController_rendering.cpp \
+./src/Managers/TextureManager.cpp \
+./src/ObjectsComponents/TextureComponent.cpp \
+./src/ObjectsComponents/MorphTargetAnimation.cpp \
+./src/EngineObjects/EngineObject.cpp \
+./src/EngineObjects/GameObject.cpp \
+./src/EngineObjects/GameObject_Parsing.cpp \
+./src/EngineObjects/GameUIObject.cpp \
+./src/EngineObjects/GameTextObject.cpp
 
 OBJ = $(SRC:.cpp=.o)
 

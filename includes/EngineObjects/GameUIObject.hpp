@@ -1,7 +1,7 @@
 #ifndef GAMEUIOBJECT_HPP
 # define GAMEUIOBJECT_HPP
 
-#include "aleung-c_engine.hpp"
+#include "../aleung-c_engine.hpp"
 
 class GameUIObject : public EngineObject
 {
