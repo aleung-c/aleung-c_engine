@@ -4,6 +4,9 @@
 ** The file for the GameObject's morph targeting animation methods.
 **	Class nested in GameObject handling the morph targeting.
 **	Implemented as a side component of the GameObject.
+**
+**	The whole usage is still a bit janky, and would get a lot 
+**	to be refactored, especially concerning animation state changing.
 */
 
 MorphTargetAnimation::MorphTargetAnimation()
