@@ -32,11 +32,15 @@ class MorphTargetAnimation
 
 		// ----- Accessors / animation settings
 		float							GetCurTime();
+		void							SetCurTime(float newTime);
+
 		void							SetRepeat(bool val);
+		void							SetStayOnEnd(bool val);
+
 		bool							IsRepeating();
 		bool							HasStarted();
-
 		bool							IsAnimated();
+		bool							StayOnEnd();
 
 	private:
 		bool							_isMorphAnimated;
@@ -44,6 +48,7 @@ class MorphTargetAnimation
 		float							_animSpeed;
 		bool							_started;
 		bool							_repeat;
+		bool							_stayOnEnd;
 };
 
 #endif

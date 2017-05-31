@@ -252,16 +252,18 @@ void	GameEngineController::draw3DModels()
 		it != GameObjectList.end();
 		it++)
 	{
-		
-		if ((*it)->MorphAnimation.IsAnimated() == true)
+		if ((*it)->Visible == true)
 		{
-			glUseProgram(MorphTargetProgramme);
-			renderMorphAnimation(*it);
-		}
-		else
-		{
-			glUseProgram(MainShaderProgramme);
-			render3DGameObject(*it);
+			if ((*it)->MorphAnimation.IsAnimated() == true)
+			{
+				glUseProgram(MorphTargetProgramme);
+				renderMorphAnimation(*it);
+			}
+			else
+			{
+				glUseProgram(MainShaderProgramme);
+				render3DGameObject(*it);
+			}
 		}
 	}
 }
@@ -283,7 +285,10 @@ void	GameEngineController::drawUIObjects()
 		it != GameUIObjectList.end();
 		it++)
 	{
-		renderGameUIObject(*it);
+		if ((*it)->Visible == true)
+		{
+			renderGameUIObject(*it);
+		}
 	}
 }
 
@@ -305,6 +310,9 @@ void	GameEngineController::drawTextObjects()
 		it != GameTextObjectList.end();
 		it++)
 	{
-		renderGameTextObject(*it);
+		if ((*it)->Visible == true)
+		{
+			renderGameTextObject(*it);
+		}
 	}
 }

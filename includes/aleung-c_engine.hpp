@@ -66,8 +66,8 @@
 **	Engine default values
 */
 
-#define TEXTUREMIPMAP_DEFAULT 4
-#define ANTIALIASING_DEFAULT 4
+#define TEXTUREMIPMAP_DEFAULT 2
+#define ANTIALIASING_DEFAULT 2
 
 /*
 **	Objects type handled by the engine.
