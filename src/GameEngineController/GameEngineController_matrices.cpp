@@ -37,9 +37,8 @@ void		GameEngineController::loadMatrices()
 
 /*
 **	For one object of our scene, apply model view projection matrices.
-**	Rotation is not working as intended. The pivot point is incorrect.
-**	Lots of inversions of matrices were tested, without success.
-**	Maybe the problem does not come from the matrices.
+**	The rotation pivot point is correct, just make sure your
+**	obj model is exported from its local center.
 */
 
 void		GameEngineController::applyMatricesToObject(GameObject *Object)
@@ -54,6 +53,7 @@ void		GameEngineController::applyMatricesToObject(GameObject *Object)
 	// scaling
 	MatModel = glm::scale(MatModel, Object->Transform.Scale);
 
+
 	// added offset for recentering.
 	MatModel = glm::translate(MatModel, Object->BoundingBox.Center);
 	// rotation
@@ -63,17 +63,19 @@ void		GameEngineController::applyMatricesToObject(GameObject *Object)
 	// remove offset for recentering.
 	MatModel = glm::translate(MatModel, -Object->BoundingBox.Center);
 
-	// // Separated matrice version, same end;
-		// MatModelTranslation = glm::translate(glm::mat4(), Object->Transform.Position);
-		// MatModelRecenter = glm::translate(glm::mat4(), Object->BoundingBox.Center);
-		// MatModelRecenterInverted = glm::translate(glm::mat4(), -Object->BoundingBox.Center);
-		// MatModelRotation = glm::rotate(glm::mat4(), glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
-		// MatModelRotation = glm::rotate(MatModelRotation, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
-		// MatModelRotation = glm::rotate(MatModelRotation, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
-		// MatModelScaling = glm::scale(glm::mat4(), Object->Transform.Scale);
-		// MatModelIdentity = glm::mat4(1.0);
 
-		// MatModel = MatModelTranslation * MatModelScaling * MatModelRecenter * MatModelRotation * MatModelRecenterInverted * MatModelIdentity;
+	// update bounding box with model matrice (vec3/4 conversion)
+	// _tmpVec = glm::vec4(Object->BoundingBox.Min.x, Object->BoundingBox.Min.y, Object->BoundingBox.Min.z, 1.0);
+	// _tmpVec = _tmpVec * MatModel;
+	// Object->BoundingBox.Min = glm::vec3(_tmpVec.x, _tmpVec.y, _tmpVec.z);
+
+	// _tmpVec = glm::vec4(Object->BoundingBox.Max.x, Object->BoundingBox.Max.y, Object->BoundingBox.Max.z, 1.0);
+	// _tmpVec = _tmpVec * MatModel;
+	// Object->BoundingBox.Max = glm::vec3(_tmpVec.x, _tmpVec.y, _tmpVec.z);
+
+	// _tmpVec = glm::vec4(Object->BoundingBox.Center.x, Object->BoundingBox.Center.y, Object->BoundingBox.Center.z, 1.0);
+	// _tmpVec = _tmpVec * MatModel;
+	// Object->BoundingBox.Center = glm::vec3(_tmpVec.x, _tmpVec.y, _tmpVec.z);
 
 	// Final MVP matrice merging.
 	MatMVP = MatPerspectiveProjection * MatView * MatModel;	
@@ -82,4 +84,17 @@ void		GameEngineController::applyMatricesToObject(GameObject *Object)
 	GLint uniform_mat = glGetUniformLocation(MainShaderProgramme, "mvp_matrix");
 	if (uniform_mat != -1)
 		glUniformMatrix4fv(uniform_mat, 1, GL_FALSE, &MatMVP[0][0]);
+
+	// update bounding box
+	glm::rotate(Object->BoundingBox.Min, glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+	glm::rotate(Object->BoundingBox.Min, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+	glm::rotate(Object->BoundingBox.Min, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+
+	glm::rotate(Object->BoundingBox.Center, glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+	glm::rotate(Object->BoundingBox.Center, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+	glm::rotate(Object->BoundingBox.Center, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+
+	glm::rotate(Object->BoundingBox.Max, glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+	glm::rotate(Object->BoundingBox.Max, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+	glm::rotate(Object->BoundingBox.Max, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
 }

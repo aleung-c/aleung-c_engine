@@ -112,6 +112,9 @@ class	GameEngineController
 		void								loadShaders();
 		
 		// ----- Matrice handling.
+
+		glm::vec4							_tmpVec;
+
 		void								loadMatrices();
 		void								applyMatricesToObject(GameObject *Object);
 		// ----- Textures.

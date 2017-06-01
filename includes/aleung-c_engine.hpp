@@ -39,6 +39,7 @@
 // lib GML - Opengl mathematics
 # include "../glm/glm/glm.hpp"
 # include "../glm/glm/gtc/matrix_transform.hpp"
+# include "../glm/glm/gtx/rotate_vector.hpp"
 
 // linking GLFW
 # include "../glfw-3.2.1/include/GLFW/glfw3.h"
