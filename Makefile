@@ -16,6 +16,7 @@ SRC = ./src/GameEngineController/GameEngineController.cpp \
 ./src/GameEngineController/GameEngineController_camera.cpp \
 ./src/GameEngineController/GameEngineController_rendering.cpp \
 ./src/Managers/TextureManager.cpp \
+./src/ObjectsComponents/BoundingBoxComponent.cpp \
 ./src/ObjectsComponents/TextureComponent.cpp \
 ./src/ObjectsComponents/MorphTargetAnimation.cpp \
 ./src/EngineObjects/EngineObject.cpp \

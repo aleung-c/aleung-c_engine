@@ -91,6 +91,42 @@ void		GameEngineController::renderMorphAnimation(GameObject	*obj)
 	}
 }
 
+void GameEngineController::renderBoundingBox(GameObject *obj)
+{
+	MatModel = glm::mat4();
+
+	MatModel = glm::translate(MatModel, obj->Transform.Position);
+
+	MatModel = glm::scale(MatModel, obj->Transform.Scale);
+
+	MatModel = glm::translate(MatModel, glm::vec3(obj->BoundingBox.LocalCenter));
+
+	// rotation
+	MatModel = glm::rotate(MatModel, glm::radians(obj->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+	MatModel = glm::rotate(MatModel, glm::radians(obj->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+	MatModel = glm::rotate(MatModel, glm::radians(obj->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+
+	MatModel = glm::translate(MatModel, glm::vec3(-obj->BoundingBox.LocalCenter));
+
+	obj->BoundingBox.Update(MatModel);
+
+	// Final MVP matrice merging.
+	MatMVP = MatPerspectiveProjection * MatView * MatModel;
+
+	GLint uniform_mat = glGetUniformLocation(MainShaderProgramme, "mvp_matrix");
+	if (uniform_mat != -1)
+		glUniformMatrix4fv(uniform_mat, 1, GL_FALSE, &MatMVP[0][0]);
+	glUniform1i(glGetUniformLocation(MainShaderProgramme, "has_texture"), GL_FALSE);
+
+	glBindBuffer(GL_ARRAY_BUFFER, obj->BoundingBox.GetVbo());
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+	glEnableVertexAttribArray(0);
+	glDrawArrays(GL_POINTS, 0, 8);
+	glDisableVertexAttribArray(0);
+
+	
+}
+
 // --------------------------------------------------------------------	//
 //																		//
 //	Rendering UI object													//

@@ -24,20 +24,20 @@ void		GameObject::getObjValues(FILE *file)
 				vertex.w = 1.0;
 				// ----- Set Bounding box values;
 				// Set x
-				if (vertex.x >= BoundingBox.Max.x)
-					BoundingBox.Max.x = vertex.x;
-				if (vertex.x <= BoundingBox.Min.x)
-					BoundingBox.Min.x = vertex.x;
+				if (vertex.x >= BoundingBox.LocalMax.x)
+					BoundingBox.LocalMax.x = vertex.x;
+				if (vertex.x <= BoundingBox.LocalMin.x)
+					BoundingBox.LocalMin.x = vertex.x;
 				// Set y
-				if (vertex.y >= BoundingBox.Max.y)
-					BoundingBox.Max.y = vertex.y;
-				if (vertex.y <= BoundingBox.Min.y)
-					BoundingBox.Min.y = vertex.y;
+				if (vertex.y >= BoundingBox.LocalMax.y)
+					BoundingBox.LocalMax.y = vertex.y;
+				if (vertex.y <= BoundingBox.LocalMin.y)
+					BoundingBox.LocalMin.y = vertex.y;
 				// Set z
-				if (vertex.z >= BoundingBox.Max.z)
-					BoundingBox.Max.z = vertex.z;
-				if (vertex.z <= BoundingBox.Min.z)
-					BoundingBox.Min.z = vertex.z;
+				if (vertex.z >= BoundingBox.LocalMax.z)
+					BoundingBox.LocalMax.z = vertex.z;
+				if (vertex.z <= BoundingBox.LocalMin.z)
+					BoundingBox.LocalMin.z = vertex.z;
 				// ----- end set bounding box min max.
 				_objVertices.push_back(vertex);
 			}
@@ -50,7 +50,7 @@ void		GameObject::getObjValues(FILE *file)
 			else if (strncmp(lineHeader, "vn", 3) == 0)
 			{
 				glm::vec3	normal;
-				fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
+				fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
 				_objNormals.push_back(normal);
 			}
 			else if (strncmp(lineHeader, "f", 3) == 0)
@@ -60,7 +60,7 @@ void		GameObject::getObjValues(FILE *file)
 				int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n",
 					&vertexIndex[0], &uvIndex[0], &normalIndex[0],
 					&vertexIndex[1], &uvIndex[1], &normalIndex[1],
-					&vertexIndex[2], &uvIndex[2], &normalIndex[2] );
+					&vertexIndex[2], &uvIndex[2], &normalIndex[2]);
 
 				if (matches != 9)
 				{

@@ -46,42 +46,21 @@ GameObject::GameObject(std::string objName, std::string path)
 	ObjPath = path;
 	HasModel = true;
 	MorphAnimation.StartFrame = this;
-	// set initial values to zero.
+
 	initValues();
-	// Parse the obj file to scoop values.
 	getObjValues(file);
-	// set bounding box center -> object math center.
-	BoundingBox.Center.x = ((BoundingBox.Min.x + BoundingBox.Max.x) / 2.0);
-	BoundingBox.Center.y = ((BoundingBox.Min.y + BoundingBox.Max.y) / 2.0);
-	BoundingBox.Center.z = ((BoundingBox.Min.z + BoundingBox.Max.z) / 2.0);
 
-	BoundingBox.Width = BoundingBox.Max.x - BoundingBox.Min.x;
-	BoundingBox.Height = BoundingBox.Max.y - BoundingBox.Min.y;
-	BoundingBox.Depth = BoundingBox.Max.z - BoundingBox.Min.z;
+	BoundingBox.InitBBoxDisplay();
 
-	// // ----- PRINT Bounding box
-	// std::cout << "min = " << BoundingBox.Min.x << "x "
-	// 			<< BoundingBox.Min.y << "y "
-	// 			<< BoundingBox.Min.z << "z" << std::endl;
-
-	// std::cout << "center = " << BoundingBox.Center.x << "x "
-	// 			<< BoundingBox.Center.y << "y "
-	// 			<< BoundingBox.Center.z << "z" << std::endl;
-
-	// std::cout << "max = " << BoundingBox.Max.x << "x "
-	// 			<< BoundingBox.Max.y << "y "
-	// 			<< BoundingBox.Max.z << "z" << std::endl << std::endl;
-
-	// create faces from indexes.
 	createObjFaces();
-	// set opengl buffers
 	setBuffers();
+
 	// try to AUTO LOAD texture.
 	std::string texPath = ObjPath;
 	texPath.resize(ObjPath.size() - 4);
 	texPath.append(".bmp", 4);
 	Texture.Load(texPath);
-	// Add this object to the engine's list of objects.
+
 	GameEngineController::Instance().GameObjectList.push_back(this);
 }
 
@@ -92,9 +71,9 @@ void		GameObject::initValues()
 	Transform.Rotation = glm::vec3(0.0, 0.0, 0.0);
 	Transform.Scale = glm::vec3(1.0, 1.0, 1.0);
 
-	BoundingBox.Min = glm::vec3(0.0, 0.0, 0.0);
-	BoundingBox.Max = glm::vec3(0.0, 0.0, 0.0);
-	BoundingBox.Center = glm::vec3(0.0, 0.0, 0.0);
+	BoundingBox.Min = glm::vec4(9999.0, 9999.0, 9999.0, 1.0);
+	BoundingBox.Max = glm::vec4(-9999.0, -9999.0, -9999.0, 1.0);
+	BoundingBox.Center = glm::vec4(0.0, 0.0, 0.0, 1.0);
 }
 
 GameObject::~GameObject()

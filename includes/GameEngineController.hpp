@@ -129,6 +129,7 @@ class	GameEngineController
 		// ----- Object rendering.
 		void								render3DGameObject(GameObject *obj);
 		void								renderMorphAnimation(GameObject *obj);
+		void								renderBoundingBox(GameObject *obj);
 		void								renderGameUIObject(GameUIObject *obj);
 		void								renderGameTextObject(GameTextObject *obj);
 

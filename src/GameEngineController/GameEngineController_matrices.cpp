@@ -53,29 +53,20 @@ void		GameEngineController::applyMatricesToObject(GameObject *Object)
 	// scaling
 	MatModel = glm::scale(MatModel, Object->Transform.Scale);
 
-
 	// added offset for recentering.
-	MatModel = glm::translate(MatModel, Object->BoundingBox.Center);
+	MatModel = glm::translate(MatModel, glm::vec3(Object->BoundingBox.LocalCenter));
 	// rotation
 	MatModel = glm::rotate(MatModel, glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
 	MatModel = glm::rotate(MatModel, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
 	MatModel = glm::rotate(MatModel, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+
 	// remove offset for recentering.
-	MatModel = glm::translate(MatModel, -Object->BoundingBox.Center);
+	MatModel = glm::translate(MatModel, glm::vec3(-Object->BoundingBox.LocalCenter));
 
+	// Object->BoundingBox.Min = MatModel * Object->BoundingBox.Min;
+	// Object->BoundingBox.Max = MatModel * Object->BoundingBox.Max;
 
-	// update bounding box with model matrice (vec3/4 conversion)
-	// _tmpVec = glm::vec4(Object->BoundingBox.Min.x, Object->BoundingBox.Min.y, Object->BoundingBox.Min.z, 1.0);
-	// _tmpVec = _tmpVec * MatModel;
-	// Object->BoundingBox.Min = glm::vec3(_tmpVec.x, _tmpVec.y, _tmpVec.z);
-
-	// _tmpVec = glm::vec4(Object->BoundingBox.Max.x, Object->BoundingBox.Max.y, Object->BoundingBox.Max.z, 1.0);
-	// _tmpVec = _tmpVec * MatModel;
-	// Object->BoundingBox.Max = glm::vec3(_tmpVec.x, _tmpVec.y, _tmpVec.z);
-
-	// _tmpVec = glm::vec4(Object->BoundingBox.Center.x, Object->BoundingBox.Center.y, Object->BoundingBox.Center.z, 1.0);
-	// _tmpVec = _tmpVec * MatModel;
-	// Object->BoundingBox.Center = glm::vec3(_tmpVec.x, _tmpVec.y, _tmpVec.z);
+	// Object->BoundingBox.Update(MatModel);
 
 	// Final MVP matrice merging.
 	MatMVP = MatPerspectiveProjection * MatView * MatModel;	
@@ -85,16 +76,26 @@ void		GameEngineController::applyMatricesToObject(GameObject *Object)
 	if (uniform_mat != -1)
 		glUniformMatrix4fv(uniform_mat, 1, GL_FALSE, &MatMVP[0][0]);
 
-	// update bounding box
-	glm::rotate(Object->BoundingBox.Min, glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
-	glm::rotate(Object->BoundingBox.Min, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
-	glm::rotate(Object->BoundingBox.Min, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
 
-	glm::rotate(Object->BoundingBox.Center, glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
-	glm::rotate(Object->BoundingBox.Center, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
-	glm::rotate(Object->BoundingBox.Center, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
 
-	glm::rotate(Object->BoundingBox.Max, glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
-	glm::rotate(Object->BoundingBox.Max, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
-	glm::rotate(Object->BoundingBox.Max, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+	// // update bounding box
+	// Object->BoundingBox.Min = Object->BoundingBox.Min - Object->BoundingBox.Center;
+
+	// Object->BoundingBox.Min = glm::rotate(Object->BoundingBox.Min, glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+	// Object->BoundingBox.Min = glm::rotate(Object->BoundingBox.Min, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+	// Object->BoundingBox.Min = glm::rotate(Object->BoundingBox.Min, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+
+	// Object->BoundingBox.Min = Object->BoundingBox.Min + Object->BoundingBox.Center;
+
+	// // Object->BoundingBox.Center = glm::rotate(Object->BoundingBox.Center, glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+	// // Object->BoundingBox.Center = glm::rotate(Object->BoundingBox.Center, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+	// // Object->BoundingBox.Center = glm::rotate(Object->BoundingBox.Center, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+
+	// Object->BoundingBox.Max = Object->BoundingBox.Max - Object->BoundingBox.Center;
+
+	// Object->BoundingBox.Max = glm::rotate(Object->BoundingBox.Max, glm::radians(Object->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+	// Object->BoundingBox.Max = glm::rotate(Object->BoundingBox.Max, glm::radians(Object->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+	// Object->BoundingBox.Max = glm::rotate(Object->BoundingBox.Max, glm::radians(Object->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+
+	// Object->BoundingBox.Max = Object->BoundingBox.Max + Object->BoundingBox.Center;
 }

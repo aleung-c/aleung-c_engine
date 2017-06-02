@@ -180,7 +180,9 @@ int		GameEngineController::initOpenGL()
 		std::cout << "OpenGL version supported " << version << std::endl;
 	}
 
-	//glEnable(GL_PROGRAM_POINT_SIZE);
+	glEnable(GL_PROGRAM_POINT_SIZE);
+	glPointSize(4.0);
+
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
@@ -189,6 +191,10 @@ int		GameEngineController::initOpenGL()
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// glEnable(GL_POLYGON_OFFSET_FILL);
+	// glPolygonOffset(1, 0);
+	
 
 	// for antialiasing.
 	glEnable(GL_MULTISAMPLE);
@@ -263,6 +269,11 @@ void	GameEngineController::draw3DModels()
 			{
 				glUseProgram(MainShaderProgramme);
 				render3DGameObject(*it);
+			}
+			if (DebugMode == true)
+			{
+				glUseProgram(MainShaderProgramme);
+				renderBoundingBox(*it);
 			}
 		}
 	}
