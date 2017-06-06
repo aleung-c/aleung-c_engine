@@ -102,13 +102,13 @@ void GameEngineController::renderBoundingBox(GameObject *obj)
 	MatModel = glm::translate(MatModel, glm::vec3(obj->BoundingBox.LocalCenter));
 
 	// rotation
-	MatModel = glm::rotate(MatModel, glm::radians(obj->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
-	MatModel = glm::rotate(MatModel, glm::radians(obj->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
-	MatModel = glm::rotate(MatModel, glm::radians(obj->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
+	// MatModel = glm::rotate(MatModel, glm::radians(obj->Transform.Rotation.x), glm::vec3(1.0, 0.0, 0.0));
+	// MatModel = glm::rotate(MatModel, glm::radians(obj->Transform.Rotation.y), glm::vec3(0.0, 1.0, 0.0));
+	// MatModel = glm::rotate(MatModel, glm::radians(obj->Transform.Rotation.z), glm::vec3(0.0, 0.0, 1.0));
 
 	MatModel = glm::translate(MatModel, glm::vec3(-obj->BoundingBox.LocalCenter));
 
-	obj->BoundingBox.Update(MatModel);
+	// obj->BoundingBox.Update(MatModel);
 
 	// Final MVP matrice merging.
 	MatMVP = MatPerspectiveProjection * MatView * MatModel;

@@ -229,6 +229,7 @@ void	GameEngineController::Draw()
 
 		draw3DModels();
 		drawUIObjects();
+		glClear(GL_DEPTH_BUFFER_BIT);
 		drawTextObjects();
 
 		// display on screen.
