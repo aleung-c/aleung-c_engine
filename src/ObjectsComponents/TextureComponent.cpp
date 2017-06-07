@@ -63,10 +63,32 @@ void		TextureComponent::Load(std::string path)
 		}
 	}
 	// the loaded texture is now in this->_objTexture
-	_objTexture->texture_path = path;
+	// _objTexture->texture_path = path;
 	GameEngineController::Instance().TextureManager.AddTexture(_objTexture);
 	_hasTexture = true;
-	glGenTextures(1, &_objTextureID);
+	_objTextureID = _objTexture->texture_id;
+	// glGenTextures(1, &_objTextureID);
+
+	// glBindTexture(GL_TEXTURE_2D, _objTextureID);
+	// glTexStorage2D(GL_TEXTURE_2D, GameEngineController::Instance().Settings.TextureMipMapValue, GL_RGBA,
+	// _objTexture->width, _objTexture->height);
+
+	// // Give the image to OpenGL
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+	// 	_objTexture->width,
+	// 	_objTexture->height,
+	// 	0, GL_BGRA, GL_UNSIGNED_BYTE, _objTexture->data);
+
+	// glGenerateMipmap(GL_TEXTURE_2D);
+	// // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	// // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	// _objTexture->texture_id = _objTextureID;
 }
 
 /*
@@ -86,14 +108,15 @@ void		TextureComponent::Load(std::string path)
 
 int			TextureComponent::Swap(t_bmp_texture *newTexture)
 {
-	if (_hasTexture == true)
-	{
-		glDeleteTextures(1, &_objTextureID);
-	}
+	// if (_hasTexture == true)
+	// {
+	// 	glDeleteTextures(1, &_objTextureID);
+	// }
 	if (newTexture)
 	{
 		this->_objTexture = newTexture;
-		glGenTextures(1, &_objTextureID);
+		// glGenTextures(1, &_objTextureID);
+		_objTextureID = newTexture->texture_id;
 		_hasTexture = true;
 	}
 	else
@@ -119,7 +142,8 @@ int			TextureComponent::Replace(t_bmp_texture *newTexture)
 	if (newTexture)
 	{
 		this->_objTexture = newTexture;
-		glGenTextures(1, &_objTextureID);
+		// glGenTextures(1, &_objTextureID);
+		this->_objTextureID = newTexture->texture_id;
 		_hasTexture = true;
 	}
 	else

@@ -88,6 +88,7 @@ enum EngineObjectType
 typedef struct						s_bmp_texture
 {
 	// Data read from the header of the BMP file
+	GLuint							texture_id;
 	std::string						texture_path;
 	unsigned char					header[54]; // Each BMP file begins by a 54-bytes header
 	unsigned int					data_pos;     // Position in the file where the actual data begins

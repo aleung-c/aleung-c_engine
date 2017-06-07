@@ -44,6 +44,7 @@ char		*GameEngineController::GetFileContent(std::string file_path)
 
 /*
 **	Get the content of a bmp file and returns it in the argument t_bmp_texture *.
+**	Also loads the texture into an OpenGL buffer and generate its mipmaps.
 **	Public static method.
 **	Those errors are not fatal, and as such are hidden when not in debug mode.
 */
@@ -102,5 +103,29 @@ int		GameEngineController::LoadTextureFile(t_bmp_texture *texture, std::string p
 	// Read the actual data from the file into the buffer
 	fread(texture->data, 1, texture->image_size, file);
 	fclose(file);
+
+	// LOAD texture into OPENGL.
+	glGenTextures(1, &texture->texture_id);
+
+	glBindTexture(GL_TEXTURE_2D, texture->texture_id);
+	glTexStorage2D(GL_TEXTURE_2D, GameEngineController::Instance().Settings.TextureMipMapValue, GL_RGBA,
+	texture->width, texture->height);
+
+	// Give the image to OpenGL
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+		texture->width,
+		texture->height,
+		0, GL_BGRA, GL_UNSIGNED_BYTE, texture->data);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+
 	return (0);
 }
