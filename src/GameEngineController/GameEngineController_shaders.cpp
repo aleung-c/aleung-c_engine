@@ -36,6 +36,7 @@ void	GameEngineController::loadShaders()
 	glAttachShader(shader_programme, vs);
 	glLinkProgram (shader_programme);
 	MainShaderProgramme = shader_programme;
+	free(VertexShader_1);
 
 	// -------------------------------------------------------------------------- //
 	//	Orthographic Shaders -> UI and text										  //
@@ -62,7 +63,7 @@ void	GameEngineController::loadShaders()
 	// ------------------------------------------------------------------------ //
 
 	VertexShader_1 = GetFileContent("./aleung-c_engine/shaders/morph_target_vshader.vs");
-	FragmentShader_1 = GetFileContent("./aleung-c_engine/shaders/fshader_1.fs");
+	// FragmentShader_1 = GetFileContent("./aleung-c_engine/shaders/fshader_1.fs");
 
 	// Create shader programme
 	GLuint vs3 = glCreateShader(GL_VERTEX_SHADER);
