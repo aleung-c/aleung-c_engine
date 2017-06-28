@@ -251,6 +251,7 @@ void	GameEngineController::draw3DModels()
 	// glUseProgram(MainShaderProgramme);
 
 	// Reset Camera VIEW matrix for camera movement.
+	// Note: the last value is the orientation for the up of the camera(y+), dont change it!
 	MatView = glm::lookAt(MainCamera->Transform.Position, CameraLookAt, glm::vec3(0.0, 2.0, 0.0));
 
 	// draw 3d objects
