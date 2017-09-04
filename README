@@ -56,7 +56,7 @@ And finally the engine linking:
 
 
 This gives in my example the following makefile compilation lines (then again, macOS):
-```
+
     [...]
 
     SRC = ...
@@ -88,21 +88,21 @@ This gives in my example the following makefile compilation lines (then again, m
         $(CC) -o $@ -c $<
 
     [...]
-```
+
 II. Using the engine.
 
     a. Starting the code.
 
 Once the engine is linked, congratulations! That was the toughest part.
 To use the engine, you must before almost everything else init the engine like this:
-```
+
     GameEngineController    GameEngine;
 
     GameEngine->Init(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
-```
+
 This will create a window with the specified arguments.
 Then, you should have a main loop such as this:
-```
+
     Game.InitGame();
     while (!glfwWindowShouldClose(GameEngine->Window))
     {
@@ -112,38 +112,38 @@ Then, you should have a main loop such as this:
         GameEngine->Draw();
         Game.LateUpdate();
     }
-```
+
 "Game" being an imaginary class where you will code your gameplay.
 
 Know that as you code, you always have access to the instance of the engine with:
-```
+
      GameEngineController::Instance()
-```
+
 It is a singleton, accessible wherever you need it.
 Also, there is a Settings Component on the engine, where you can
 set all engine related variables, such as the antialiasing value:
-```
+
     GameEngine.Settings.AntiAliasingValue = 4;
-```
+
     b. Set the camera.
 
 To get access to the camera, the engine has these public methods:
-```
+
 	GameObject	*GetCamera();
 	glm::vec3	*GetCameraLookAtVec3();
 	void		SetCamera(GameObject *NewCamera);
 	void		SetCameraLookAt(glm::vec3 new_look_pos);
-```
+
 Use them to stock or replace the engine's default camera for gameplay purpose,
 until I get motivated to make a better user set camera.
 
     c. Putting objects on our screen.
 
 To put an object in the world, you should just do this:
-```
+
     GameObject *Character = new GameObject("Character", "./ressources/Model.obj");
     Character->Transform.Position = glm::vec3(3.0, 0.0, 0.0);
-```
+
 This will put the object in the engine's list of object, and draw it when 
 asked.
 If you want to simply texture this object, you must have a texture with
@@ -162,11 +162,11 @@ And then, you can add GameTextObject elements, which will put text on the screen
 elements as well, and which will be on top of the ui elements.
 
 These classes are used very similarly to the base GameObject, with these constructors:
-```
+
     GameUIObject(std::string name, std::string imgPath);
 
     GameTextObject(std::string name, std::string text);
-```
+
 
 With these three classes, you can start making games, as their glm::vec3 Position, Rotation, and Scale
 can be modified, and will be reflected in the draw() calls.
@@ -183,15 +183,15 @@ It does an automatic texture loading.
 However, games may require the texture to be changed on the spot. This means we must change the texture in our objects.
 Inside the GameObject, or any textured object, there is a Texture component, allowing
 easy texture handling:
-```
+
     GameObject *Character = new GameObject("Character", "./ressources/Model.obj");
 
     Character->Texture.Load("./ressources/newTexture.bmp");
-```
+
 This way of changing the texture will parse the new file you give it. It is cool, sure, but if you call it several times,
 it will create performance problems.
 There is the right way to do it if you want to stock multiple textures in some sort of pool:
-```
+
     GameObject      *Character = new GameObject("Character", "./ressources/Model.obj");
 
     t_bmp_texture   new_texture_1;
@@ -205,7 +205,7 @@ There is the right way to do it if you want to stock multiple textures in some s
     Character->Texture.Swap(new_texture_1);
     ....
     Character->Texture.Swap(new_texture_2);
-```
+
 Know that if the character already has a texture and you swap over it, the previous texture will be a memory leak.
 If you want to change the texture only once and want the previous texture leaked, you can also use Texture.Replace(t_bmp_texture *).
 
