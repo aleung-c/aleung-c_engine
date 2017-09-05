@@ -1,6 +1,8 @@
 # aleung-c_engine
 Basic high-level OpenGL engine
 
+---
+
 This C++ game engine is an overlay of classes and functions that can be put in code to
 create simple 3d openGL programs. It will handle openGL related calls and
 memory handling, to allow the gameplay side to just call some lines of code to
@@ -14,10 +16,10 @@ openGL program, it requires quite a lot of lines.
 
 In this engine, those lines are enough:
 ```
-  GameEngineController    GameEngine;
+  GameEngineController    *GameEngine = &GameEngineController::Instance();
 
   // this initialize the engine and a window
-  GameEngine.Init(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
+  GameEngine->Init(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
 ```
 
 ```
@@ -28,9 +30,9 @@ In this engine, those lines are enough:
 
 ```
   // in your main game loop;
-  while (!glfwWindowShouldClose(GameEngine.Window))
+  while (!glfwWindowShouldClose(GameEngine->Window))
   {
-    GameEngine.Draw();
+    GameEngine->Draw();
   }
 ```
 
