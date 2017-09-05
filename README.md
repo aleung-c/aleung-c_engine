@@ -57,3 +57,8 @@ For more details on how to use this, I redirect you to the [USAGE_README](./USAG
 It could be more than that but the idea was to make simple games for educational purpose, and some advanced
 functionalities require just too much time to implement. Note that the installation is far from optimized
 and "key in hand", and is likely to be only compatible to MacOS systems.
+
+I used this engine to create the [42run](https://github.com/aleung-c/42run) and [ParticleSystem](https://github.com/aleung-c/ParticleSystem) projects.
+
+Examples Screens:
+
