@@ -62,5 +62,19 @@ and "key in hand", and is likely to be only compatible to MacOS systems.
 
 I used this engine to create the [42run](https://github.com/aleung-c/42run) and [ParticleSystem](https://github.com/aleung-c/ParticleSystem) projects.
 
+You can also check the [aleung-c_engine_ShowCase](https://github.com/aleung-c/aleung-c_engine_ShowCase) for the minimum code in action.
+
 Examples Screens:
+
+From the 42run:
+
+![Alt text](./screens/aleung-c_engine_1.png "aleung-c_engine screenshot 1")
+
+From the ParticleSystem:
+
+![Alt text](./screens/aleung-c_engine_2.png "aleung-c_engine screenshot 2")
+
+From the aleung-c_engine_ShowCase:
+
+![Alt text](./screens/aleung-c_engine_3.png "aleung-c_engine screenshot 3")
 
