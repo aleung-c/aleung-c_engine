@@ -98,18 +98,18 @@ To use the engine, you must before almost everything else init the engine like t
 
     GameEngineController    GameEngine;
 
-    GameEngine->Init(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
+    GameEngine.Init(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
 
 This will create a window with the specified arguments.
 Then, you should have a main loop such as this:
 
     Game.InitGame();
-    while (!glfwWindowShouldClose(GameEngine->Window))
+    while (!glfwWindowShouldClose(GameEngine.Window))
     {
         glfwPollEvents();
 
         Game.Update();
-        GameEngine->Draw();
+        GameEngine.Draw();
         Game.LateUpdate();
     }
 
